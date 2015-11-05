@@ -57,6 +57,10 @@ public class MazeGenerator : MonoBehaviour {
             this.size = size;
             this.numberOfPartitions = size;
             theSet = new int[size];
+            for(int i = 0; i < size; i++)
+            {
+                theSet[i] = -1;
+            }
         }
 
         public void union(int part1, int part2)
@@ -89,9 +93,10 @@ public class MazeGenerator : MonoBehaviour {
                 theSet[element] = find(theSet[element]);
                 //increase the rank of the root
                 theSet[theSet[element]] -= 1;
+                return theSet[element];
             }
+            else return element;
 
-            return theSet[element];
         }
 
         /// <summary>
@@ -132,6 +137,13 @@ public class MazeGenerator : MonoBehaviour {
         int totalCells = xSize * zSize;
         DisjointSet mazePartitions = new DisjointSet(totalCells);
         int currentCellID = 0;
+        
+        //These will be used in the maze generation loop.
+        int randomCellX;
+        int randomCellZ;
+        int randomCellID;
+
+
         //Generate the default "All walls filled" maze
         for(int z = 0; z < zSize; z++)
         {
@@ -143,7 +155,32 @@ public class MazeGenerator : MonoBehaviour {
 
         //randomly fuze two adjacent cells until the maze is fully constructed
         while (!mazePartitions.allInOne())
-        { 
+        {
+            randomCellX = Random.Range(0, xSize - 1);
+            randomCellZ = Random.Range(0, zSize - 1);
+            randomCellID = theMaze[randomCellX, randomCellZ].ID;
+
+            
+            if(mazePartitions.find(randomCellID) == randomCellID)
+            {
+                //Cell is part of its own partition
+
+                //If 1, we will break the right wall
+                if(Random.Range(0, 1) == 1)
+                {
+                    int otherCell = theMaze[randomCellX + 1, randomCellZ].ID;
+                    theMaze[randomCellX, randomCellZ].rightBlocked = false;
+                    mazePartitions.union(randomCellID, otherCell);
+                }
+                //Otherwise, we will break the down wall
+                else
+                {
+                    int otherCell = theMaze[randomCellX, randomCellZ + 1].ID;
+                    theMaze[randomCellX, randomCellZ].downBlocked = false;
+                    mazePartitions.union(randomCellID, otherCell);
+                }
+            }
+
         
         }
 
