@@ -12,6 +12,12 @@ public class MazeGenerator : MonoBehaviour {
     private int xSize, zSize, cellWidth;
 
     /// <summary>
+    /// This is the actual array of Cells that the maze generation algorithm yields
+    /// 
+    /// </summary>
+    private Cell [,] theMaze;
+
+    /// <summary>
     /// the preFab that the walls will be generated from. It is suggested that the
     /// geometry of the wall is able to be stretched with minimal trouble, so that
     /// we may be able to tweak the cell size.
@@ -40,13 +46,15 @@ public class MazeGenerator : MonoBehaviour {
     }
     
     /// <summary>
-    /// This Disjoint Set implements the Union/ Find algorithms with path compression
+    /// This Disjoint Set implements the Union/ Find algorithms with path 
+    /// compression
     /// </summary>
     public class DisjointSet
     {
         int size;
         int numberOfPartitions;
         int[] theSet;
+
         /// <summary>
         /// Creates a disjoint set of size size, with each element initially in its
         /// own unique partition.
@@ -63,6 +71,16 @@ public class MazeGenerator : MonoBehaviour {
             }
         }
 
+        public int Partitions
+        {
+            get { return numberOfPartitions; }
+        }
+
+        public int Size
+        {
+            get { return size; }
+        }
+
         public void union(int part1, int part2)
         {
             int part1Root = this.find(part1);
@@ -71,32 +89,35 @@ public class MazeGenerator : MonoBehaviour {
             if (part1Root == part2Root)
                 return;
 
-            if(theSet[part1Root] < theSet[part2Root])
+            if(theSet[part1Root] <= theSet[part2Root])
             {
+                theSet[part1Root] += theSet[part2Root];
                 theSet[part2Root] = part1Root;
-            }
-            else if(theSet[part1Root] > theSet[part2Root])
-            {
-                theSet[part1Root] = part2Root;
             }
             else
             {
-                theSet[part2] = part1Root;
-                theSet[part1Root] -= 1;
+                theSet[part2Root] += theSet[part1Root];
+                theSet[part1Root] = part2Root;
             }
+
+            numberOfPartitions--;
         }
 
         public int find(int element)
         {
-            if (theSet[element] >= 0)
+            if (theSet[element] < 0)
             {
+                return element;
+            }
+            else
+            {
+                //This indicates the code has broken horribly and execution should
+                //not be allowed to continue
+                if (element == theSet[element]) throw new System.Exception();
+
                 theSet[element] = find(theSet[element]);
-                //increase the rank of the root
-                theSet[theSet[element]] -= 1;
                 return theSet[element];
             }
-            else return element;
-
         }
 
         /// <summary>
@@ -113,8 +134,6 @@ public class MazeGenerator : MonoBehaviour {
             return true;
         }
     }
-
-    private Cell [,] theMaze;
 
 	// Use this for initialization
 	void Start () 
@@ -150,37 +169,71 @@ public class MazeGenerator : MonoBehaviour {
             for(int x = 0; x < xSize; x++)
             {
                 theMaze[x, z] = new Cell(currentCellID);
+                currentCellID++;
             }
         }
 
         //randomly fuze two adjacent cells until the maze is fully constructed
-        while (!mazePartitions.allInOne())
+        while (mazePartitions.Partitions != 1)
         {
-            randomCellX = Random.Range(0, xSize - 1);
-            randomCellZ = Random.Range(0, zSize - 1);
+            randomCellX = Random.Range(0, xSize);
+            randomCellZ = Random.Range(0, zSize);
             randomCellID = theMaze[randomCellX, randomCellZ].ID;
 
-            
-            if(mazePartitions.find(randomCellID) == randomCellID)
-            {
-                //Cell is part of its own partition
+            int directionPicked = Random.Range(0, 4);
 
-                //If 1, we will break the right wall
-                if(Random.Range(0, 1) == 1)
+            //If 0, we break the right wall
+            if(directionPicked == 0 
+                && randomCellX < xSize -1 
+                && theMaze[randomCellX,randomCellZ].rightBlocked)
+            {
+                int otherCell = theMaze[randomCellX + 1, randomCellZ].ID;
+                if (mazePartitions.find(randomCellID) 
+                    != mazePartitions.find(otherCell))
                 {
-                    int otherCell = theMaze[randomCellX + 1, randomCellZ].ID;
                     theMaze[randomCellX, randomCellZ].rightBlocked = false;
                     mazePartitions.union(randomCellID, otherCell);
                 }
-                //Otherwise, we will break the down wall
-                else
+            }
+            //If 1, we break the down wall
+            else if (directionPicked == 1 
+                && randomCellZ < zSize -1
+                && theMaze[randomCellX, randomCellZ].downBlocked)
+            {
+                int otherCell = theMaze[randomCellX, randomCellZ + 1].ID;
+                if (mazePartitions.find(randomCellID) 
+                    != mazePartitions.find(otherCell))
                 {
-                    int otherCell = theMaze[randomCellX, randomCellZ + 1].ID;
                     theMaze[randomCellX, randomCellZ].downBlocked = false;
                     mazePartitions.union(randomCellID, otherCell);
                 }
             }
-
+            //If 2, we break the left wall
+            else if(directionPicked == 2 
+                && randomCellX > 0
+                && theMaze[randomCellX -1, randomCellZ].rightBlocked)
+            {
+                int otherCell = theMaze[randomCellX - 1, randomCellZ].ID;
+                if (mazePartitions.find(randomCellID) 
+                    != mazePartitions.find(otherCell))
+                {
+                    theMaze[randomCellX - 1, randomCellZ].rightBlocked = false;
+                    mazePartitions.union(randomCellID, otherCell);
+                }
+            }
+            //If 3, we break the up wall
+            else if(directionPicked == 3 
+                && randomCellZ > 0
+                && theMaze[randomCellX, randomCellZ -1].downBlocked)
+            {
+                int otherCell = theMaze[randomCellX, randomCellZ -1 ].ID;
+                if (mazePartitions.find(randomCellID) 
+                    != mazePartitions.find(otherCell))
+                {
+                    theMaze[randomCellX, randomCellZ - 1].downBlocked = false;
+                    mazePartitions.union(randomCellID, otherCell);
+                }
+            }
         
         }
 
@@ -197,9 +250,16 @@ public class MazeGenerator : MonoBehaviour {
     {
         //Add the prefabs for the external walls
 
+        //Add the prefabs for the internal "support beams"
+
         //Add the prefabs for the walls left in theMaze
 
         //possibly return the resultling maze so it can be referenced
+    }
+
+    void consoleDebugMaze(ref Cell[,] theMaze, int xSize, int ySize)
+    {
+
     }
 	
 }
