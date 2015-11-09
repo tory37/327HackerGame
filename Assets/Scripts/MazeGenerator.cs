@@ -23,7 +23,7 @@ public class MazeGenerator : MonoBehaviour {
     /// we may be able to tweak the cell size.
     /// </summary>
     [SerializeField]
-    private Transform wallPrefab;
+    private GameObject wallPrefab, floorPrefab;
 
 
     /// <summary>
@@ -140,7 +140,7 @@ public class MazeGenerator : MonoBehaviour {
     {
         theMaze = new Cell[xSize, zSize];
         generateMaze(ref theMaze,xSize, zSize);
-        constructMaze(ref theMaze, xSize, zSize, cellWidth);
+        constructMaze(ref theMaze, xSize, zSize, 1,1);
 	}
 
     /// <summary>
@@ -237,6 +237,19 @@ public class MazeGenerator : MonoBehaviour {
         
         }
 
+
+        //We're going to remove the bottom and right sides in the maze to allow for
+        //placement of the walls
+        for(int i = 0; i < xSize; i++)
+        {
+            theMaze[i, zSize - 1].downBlocked = false;
+        }
+
+        for(int i = 0; i < zSize; i++)
+        {
+            theMaze[xSize - 1, i].rightBlocked = false;
+        }
+
     }
 
     /// <summary>
@@ -246,10 +259,20 @@ public class MazeGenerator : MonoBehaviour {
     /// <param name="xSize"></param>
     /// <param name="zSize"></param>
     /// <param name="cellWidth"></param>
-    void constructMaze(ref Cell[,] theMaze, int xSize, int zSize, int cellWidth)
+    void constructMaze(ref Cell[,] theMaze, int xSize, int zSize, int cellWidth,
+        int wallWidth)
     {
-        //Add the prefabs for the external walls
+        int totalCellWidth = cellWidth + wallWidth;
+        int totalMazeWidth = totalCellWidth * xSize;
+        int totalMazeHeight = totalCellWidth * zSize;
 
+        
+        //Add the prefabs for the external walls
+        for(int i = -1; i <= totalMazeWidth; i += totalCellWidth)
+        {
+            GameObject wall = Instantiate(wallPrefab);
+            wall.transform.position = new
+        }
         //Add the prefabs for the internal "support beams"
 
         //Add the prefabs for the walls left in theMaze
