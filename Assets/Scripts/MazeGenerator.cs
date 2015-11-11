@@ -268,13 +268,72 @@ public class MazeGenerator : MonoBehaviour {
 
         
         //Add the prefabs for the external walls
-        for(int i = -1; i <= totalMazeWidth; i += totalCellWidth)
+        for(int i = -1; i < xSize*2; i += 1)
         {
-            GameObject wall = Instantiate(wallPrefab);
-            wall.transform.position = new
+            GameObject wall = (GameObject)Instantiate(wallPrefab);
+            wall.transform.position = new Vector3(i, 0, -1);
         }
-        //Add the prefabs for the internal "support beams"
+        /*
+        for(int i = -1; i <= xSize*2; i += 1)
+        {
+            GameObject wall = (GameObject)Instantiate(wallPrefab);
+            wall.transform.position = new Vector3(i, 0, 2*zSize);
+        }
+        */
 
+        for(int i = 0; i < zSize*2; i += 1)
+        {
+            GameObject wall = (GameObject)Instantiate(wallPrefab);
+            wall.transform.position = new Vector3(-1, 0, i);
+        }
+        /*
+        for(int i = 0; i < zSize*2; i += 1)
+        {
+            GameObject wall = (GameObject)Instantiate(wallPrefab);
+            wall.transform.position = new Vector3(2*xSize, 0, i);
+        }
+        */
+
+        //Add the prefabs for the internal "support beams"
+        for(int z = 0; z < zSize; z++)
+        {
+            for(int x = 0; x < xSize; x++)
+            {
+                GameObject cellFloor = (GameObject)Instantiate(floorPrefab);
+                cellFloor.transform.position = new Vector3(x*2, 0, z*2);
+                GameObject downWall, rightWall, centerPiece;
+
+                //placeing the cell's down wall
+                if(theMaze[x,z].downBlocked || z == zSize -1)
+                {
+                    downWall = (GameObject)Instantiate(wallPrefab);
+                }
+                else
+                {
+                    downWall = (GameObject)Instantiate(floorPrefab);
+                }
+                
+                downWall.transform.position = new Vector3(x * 2, 0, z * 2 + 1);
+                
+                //placing the cell's right wall
+                if(theMaze[x,z].rightBlocked || x == xSize -1)
+                {
+                    rightWall = (GameObject)Instantiate(wallPrefab);
+                }
+                else
+                {
+                    rightWall = (GameObject)Instantiate(floorPrefab);
+                }
+                
+                rightWall.transform.position = new Vector3(x * 2 + 1, 0, z * 2);
+
+                centerPiece = (GameObject)Instantiate(wallPrefab);
+                centerPiece.transform.position = new Vector3(x * 2 + 1, 0, z * 2 + 1);
+
+            }
+        }
+
+        
         //Add the prefabs for the walls left in theMaze
 
         //possibly return the resultling maze so it can be referenced
