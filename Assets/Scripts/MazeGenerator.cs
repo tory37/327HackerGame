@@ -9,7 +9,7 @@ public class MazeGenerator : MonoBehaviour {
     /// cellWidth = the length of a side of a cell Keep it even.
     /// </summary>
     [SerializeField]
-    private int xSize, zSize, cellWidth;
+    private int xSize, zSize, cellWidth, wallHeight;
 
     /// <summary>
     /// This is the actual array of Cells that the maze generation algorithm yields
@@ -138,9 +138,23 @@ public class MazeGenerator : MonoBehaviour {
 	// Use this for initialization
 	void Start () 
     {
+        wallPrefab.transform.localScale = new Vector3
+        (
+            cellWidth,
+            wallHeight,
+            cellWidth
+        );
+
+        floorPrefab.transform.localScale = new Vector3
+        (
+            cellWidth,
+            wallHeight,
+            cellWidth
+        );
+
         theMaze = new Cell[xSize, zSize];
         generateMaze(ref theMaze,xSize, zSize);
-        constructMaze(ref theMaze, xSize, zSize, 1,1);
+        constructMaze(ref theMaze, xSize, zSize, cellWidth,1);
 	}
 
     /// <summary>
@@ -271,7 +285,7 @@ public class MazeGenerator : MonoBehaviour {
         for(int i = -1; i < xSize*2; i += 1)
         {
             GameObject wall = (GameObject)Instantiate(wallPrefab);
-            wall.transform.position = new Vector3(i, 0, -1);
+            wall.transform.position = new Vector3(i* cellWidth, 0, -cellWidth);
         }
         /*
         for(int i = -1; i <= xSize*2; i += 1)
@@ -284,7 +298,7 @@ public class MazeGenerator : MonoBehaviour {
         for(int i = 0; i < zSize*2; i += 1)
         {
             GameObject wall = (GameObject)Instantiate(wallPrefab);
-            wall.transform.position = new Vector3(-1, 0, i);
+            wall.transform.position = new Vector3(-cellWidth, 0, i * cellWidth);
         }
         /*
         for(int i = 0; i < zSize*2; i += 1)
@@ -300,7 +314,7 @@ public class MazeGenerator : MonoBehaviour {
             for(int x = 0; x < xSize; x++)
             {
                 GameObject cellFloor = (GameObject)Instantiate(floorPrefab);
-                cellFloor.transform.position = new Vector3(x*2, 0, z*2);
+                cellFloor.transform.position = new Vector3(x*2*cellWidth, 0, z*2*cellWidth);
                 GameObject downWall, rightWall, centerPiece;
 
                 //placeing the cell's down wall
@@ -313,7 +327,7 @@ public class MazeGenerator : MonoBehaviour {
                     downWall = (GameObject)Instantiate(floorPrefab);
                 }
                 
-                downWall.transform.position = new Vector3(x * 2, 0, z * 2 + 1);
+                downWall.transform.position = new Vector3(x * 2 * cellWidth, 0, z * 2 * cellWidth + cellWidth);
                 
                 //placing the cell's right wall
                 if(theMaze[x,z].rightBlocked || x == xSize -1)
@@ -325,10 +339,10 @@ public class MazeGenerator : MonoBehaviour {
                     rightWall = (GameObject)Instantiate(floorPrefab);
                 }
                 
-                rightWall.transform.position = new Vector3(x * 2 + 1, 0, z * 2);
+                rightWall.transform.position = new Vector3(x * 2 * cellWidth + cellWidth, 0, z * 2 * cellWidth);
 
                 centerPiece = (GameObject)Instantiate(wallPrefab);
-                centerPiece.transform.position = new Vector3(x * 2 + 1, 0, z * 2 + 1);
+                centerPiece.transform.position = new Vector3(x * 2 * cellWidth + cellWidth, 0, z * 2 * cellWidth + cellWidth);
 
             }
         }
