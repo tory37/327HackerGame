@@ -23,7 +23,7 @@ public class MazeGenerator : MonoBehaviour {
     /// we may be able to tweak the cell size.
     /// </summary>
     [SerializeField]
-    private GameObject wallPrefab, floorPrefab;
+    private GameObject wallPrefab, floorPrefab, cielingPrefab;
 
 
     /// <summary>
@@ -315,6 +315,7 @@ public class MazeGenerator : MonoBehaviour {
             {
                 GameObject cellFloor = (GameObject)Instantiate(floorPrefab);
                 cellFloor.transform.position = new Vector3(x*2*cellWidth, 0, z*2*cellWidth);
+				cellCieling.transform.position = new Vector3( x * 2 * cellWidth, wallHeight, z * 2 * cellWidth );
                 GameObject downWall, rightWall, centerPiece;
 
                 //placeing the cell's down wall
