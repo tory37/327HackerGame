@@ -23,7 +23,7 @@ public class MazeGenerator : MonoBehaviour {
     /// we may be able to tweak the cell size.
     /// </summary>
     [SerializeField]
-    private GameObject wallPrefab, floorPrefab;
+    private GameObject wallPrefab, floorPrefab, cielingPrefab;
 
 
     /// <summary>
