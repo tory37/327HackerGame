@@ -43,6 +43,7 @@ public class MazeGenerator : MonoBehaviour {
             downBlocked = true;
             rightBlocked = true;
         }
+        
     }
     
     /// <summary>
@@ -126,12 +127,17 @@ public class MazeGenerator : MonoBehaviour {
         /// <returns>boolean signifying whether condition is met</returns>
         public bool allInOne()
         {
+            //Changed the linear search to a constant check.
             int first = find(this.theSet[0]);
+            /*
             for(int i = 1; i < size; i++)
             {
                 if (this.find(theSet[i]) != first) return false;
             }
-            return true;
+            return true;*/
+            if (numberOfPartitions == 1)
+                return true;
+            return false;
         }
     }
 
@@ -358,4 +364,5 @@ public class MazeGenerator : MonoBehaviour {
 
     }
 	
+    
 }
