@@ -4,10 +4,15 @@ using System.Collections;
 public class GameManager : MonoBehaviour 
 {
     [SerializeField]
-    private GameObject MazeGenerator, PlayerRef;
+    private GameObject PlayerRef, mazeGenerator;
+
+    private MazeGenerator mazeGeneratorRef;
 
     [SerializeField]
     private GameObject[] enemies;
+
+    Cell[,] mazeRef;
+    int xMax, zMax;
 
     private static GameManager instance;
 
@@ -35,18 +40,34 @@ public class GameManager : MonoBehaviour
     void Awake()
     {
         instance = this;
+        mazeGeneratorRef = mazeGenerator.GetComponent<MazeGenerator>();
+        
+        mazeGeneratorRef.getMaze(out mazeRef, out xMax, out zMax);
     }
 
 	// Use this for initialization
-	void Start () {
-	
+	void Start () 
+    {
+	    
 	}
 	
 	// Update is called once per frame
-	void Update () {
+	void Update () 
+    {
 	
 	}
 
+    public void getMaze(out Cell[,] theMaze, out int x, out int z)
+    {
+        theMaze = mazeRef;
+        x = xMax;
+        z = zMax;
+    }
+
+    public Cell getCell(int x, int z)
+    {
+        return instance.mazeRef[x, z];
+    }
     
 
 

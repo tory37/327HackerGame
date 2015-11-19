@@ -11,12 +11,15 @@ public struct Cell
     public bool downBlocked, rightBlocked;
 
     public int ID;
+    public int x, z;
 
     public Vector3 cellCenter;
 
-    public Cell(int ID)
+    public Cell(int ID, int x, int z)
     {
         this.ID = ID;
+        this.x = x;
+        this.z = z;
         downBlocked = true;
         rightBlocked = true;
         //This value will need to be reassigned in cell Generation
@@ -188,7 +191,8 @@ public class MazeGenerator : MonoBehaviour {
         {
             for(int x = 0; x < xSize; x++)
             {
-                theMaze[x, z] = new Cell(currentCellID);
+                theMaze[x, z] = new Cell(currentCellID, x, z);
+                
                 currentCellID++;
             }
         }
@@ -373,15 +377,19 @@ public class MazeGenerator : MonoBehaviour {
             currentCellCenter.z += cellWidth * 2;
         }
 
-        
+        this.theMaze = theMaze;
         //Add the prefabs for the walls left in theMaze
 
         //possibly return the resultling maze so it can be referenced
     }
 
-    void getMaze(out Cell[,] theMaze)
+    public void getMaze(out Cell[,] theMaze, out int x, out int z)
     {
+
+        
         theMaze = this.theMaze;
+        x = this.xSize;
+        z = this.zSize;
     }
 
     void consoleDebugMaze(ref Cell[,] theMaze, int xSize, int ySize)
