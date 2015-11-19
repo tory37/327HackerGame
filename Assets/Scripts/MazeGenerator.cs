@@ -1,6 +1,29 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+/// <summary>
+/// This struct is not actually a gameObject or anything. it will be used for
+/// the representation of the maze prior to the generation of the appropriate
+/// walls in the scene.
+/// </summary>
+public struct Cell
+{
+    public bool downBlocked, rightBlocked;
+
+    public int ID;
+
+    public Vector3 cellCenter;
+
+    public Cell(int ID)
+    {
+        this.ID = ID;
+        downBlocked = true;
+        rightBlocked = true;
+        //This value will need to be reassigned in cell Generation
+        this.cellCenter = Vector3.zero;
+    }
+}
+
 public class MazeGenerator : MonoBehaviour {
 
     /// <summary>
@@ -26,25 +49,7 @@ public class MazeGenerator : MonoBehaviour {
     private GameObject wallPrefab, floorPrefab, cielingPrefab;
 
 
-    /// <summary>
-    /// This struct is not actually a gameObject or anything. it will be used for
-    /// the representation of the maze prior to the generation of the appropriate
-    /// walls in the scene.
-    /// </summary>
-    public struct Cell
-    {
-        public bool downBlocked, rightBlocked;
 
-        public int ID;
-
-        public Cell(int ID)
-        {
-            this.ID = ID;
-            downBlocked = true;
-            rightBlocked = true;
-        }
-        
-    }
     
     /// <summary>
     /// This Disjoint Set implements the Union/ Find algorithms with path 
@@ -127,17 +132,12 @@ public class MazeGenerator : MonoBehaviour {
         /// <returns>boolean signifying whether condition is met</returns>
         public bool allInOne()
         {
-            //Changed the linear search to a constant check.
             int first = find(this.theSet[0]);
-            /*
             for(int i = 1; i < size; i++)
             {
                 if (this.find(theSet[i]) != first) return false;
             }
-            return true;*/
-            if (numberOfPartitions == 1)
-                return true;
-            return false;
+            return true;
         }
     }
 
@@ -282,6 +282,7 @@ public class MazeGenerator : MonoBehaviour {
     void constructMaze(ref Cell[,] theMaze, int xSize, int zSize, int cellWidth,
         int wallWidth)
     {
+        Vector3 currentCellCenter;
         int totalCellWidth = cellWidth + wallWidth;
         int totalMazeWidth = totalCellWidth * xSize;
         int totalMazeHeight = totalCellWidth * zSize;
@@ -314,11 +315,26 @@ public class MazeGenerator : MonoBehaviour {
         }
         */
 
+        //The position of the cell will be iteratively determined, starting in 
+        //the first cell
+        currentCellCenter = new Vector3(cellWidth / 2f, 0, cellWidth / 2f);
+
+
         //Add the prefabs for the internal "support beams"
         for(int z = 0; z < zSize; z++)
         {
+            currentCellCenter.x = cellWidth / 2f;
+
             for(int x = 0; x < xSize; x++)
             {
+
+                theMaze[x, z].cellCenter = currentCellCenter;
+                Debug.Log(
+                    "Current Cell ID: " + theMaze[x, z].ID +
+                    "\n X = " + theMaze[x, z].cellCenter.x +
+                    "\n Z = " + theMaze[x, z].cellCenter.z + "\n"
+                    );
+
                 GameObject cellFloor = (GameObject)Instantiate(floorPrefab);
                 cellFloor.transform.position = new Vector3(x*2*cellWidth, 0, z*2*cellWidth);
                 GameObject downWall, rightWall, centerPiece;
@@ -350,7 +366,11 @@ public class MazeGenerator : MonoBehaviour {
                 centerPiece = (GameObject)Instantiate(wallPrefab);
                 centerPiece.transform.position = new Vector3(x * 2 * cellWidth + cellWidth, 0, z * 2 * cellWidth + cellWidth);
 
+                //We need to account for the width of the walls, this should do
+                currentCellCenter.x += cellWidth * 2;
             }
+
+            currentCellCenter.z += cellWidth * 2;
         }
 
         
@@ -359,10 +379,14 @@ public class MazeGenerator : MonoBehaviour {
         //possibly return the resultling maze so it can be referenced
     }
 
+    void getMaze(out Cell[,] theMaze)
+    {
+        theMaze = this.theMaze;
+    }
+
     void consoleDebugMaze(ref Cell[,] theMaze, int xSize, int ySize)
     {
-
+        //not necessary, methinks
     }
 	
-    
 }
