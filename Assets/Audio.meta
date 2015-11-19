@@ -1,7 +1,13 @@
 fileFormatVersion: 2
-guid: afb6d351b42ec8e4d951652a2d32da79
+<<<<<<< HEAD
+guid: 65872b89e3b9be24db2b033350fa6192
 folderAsset: yes
-timeCreated: 1447879887
+timeCreated: 1447719111
+=======
+guid: 6a9b7d5739094c54c9ee2fb3f385ba70
+folderAsset: yes
+timeCreated: 1447811929
+>>>>>>> tory/master
 licenseType: Free
 DefaultImporter:
   userData: 
