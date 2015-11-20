@@ -14,6 +14,7 @@ public class EnemyAI : MonoBehaviour
 
     Cell currentCell;
     private int xSize, zSize;
+    Vector3 movement;
 
     void Awake()
     {
@@ -45,7 +46,24 @@ public class EnemyAI : MonoBehaviour
             changeDirection();
 
         // Move enemy to adjacent cell
+        if(currentDirection == direction.down)
+        {
+            movement = new Vector3(0, 0, 1);
+        }
+        else if(currentDirection == direction.up)
+        {
+            movement = new Vector3(0, 0, -1);
+        }
+        else if(currentDirection == direction.left)
+        {
+            movement = new Vector3(-1, 0, 0);
+        }
+        else
+        {
+            movement = new Vector3(1, 0, 0);
+        }
 
+        transform.position += movement * Time.deltaTime;
 
     }
 
@@ -91,7 +109,7 @@ public class EnemyAI : MonoBehaviour
         {
             currentDirection = direction.right;
         }
-        else if (!GameManager.Instance.getCell(currentCell.x, currentCell.z - 1).downBlocked)
+        else if (!(GameManager.Instance.getCell(currentCell.x, currentCell.z - 1)).downBlocked)
         {
             currentDirection = direction.up;
         }

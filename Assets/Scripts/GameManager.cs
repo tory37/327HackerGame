@@ -11,8 +11,8 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private GameObject[] enemies;
 
-    Cell[,] mazeRef;
-    int xMax, zMax;
+    private Cell[,] mazeRef;
+    private int xMax, zMax;
 
     private static GameManager instance;
 
@@ -40,15 +40,14 @@ public class GameManager : MonoBehaviour
     void Awake()
     {
         instance = this;
-        mazeGeneratorRef = mazeGenerator.GetComponent<MazeGenerator>();
         
-        mazeGeneratorRef.getMaze(out mazeRef, out xMax, out zMax);
     }
 
 	// Use this for initialization
 	void Start () 
     {
-	    
+        mazeGeneratorRef = mazeGenerator.GetComponent<MazeGenerator>();
+        mazeGeneratorRef.getMaze(ref mazeRef, out xMax, out zMax);
 	}
 	
 	// Update is called once per frame
@@ -56,7 +55,7 @@ public class GameManager : MonoBehaviour
     {
 	
 	}
-
+    // A way for every object in the scene to access the maze if need be in the future.
     public void getMaze(out Cell[,] theMaze, out int x, out int z)
     {
         theMaze = mazeRef;

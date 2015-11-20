@@ -25,6 +25,8 @@ public struct Cell
         //This value will need to be reassigned in cell Generation
         this.cellCenter = Vector3.zero;
     }
+    
+
 }
 
 public class MazeGenerator : MonoBehaviour {
@@ -144,8 +146,7 @@ public class MazeGenerator : MonoBehaviour {
         }
     }
 
-	// Use this for initialization
-	void Start () 
+	void Awake () 
     {
         wallPrefab.transform.localScale = new Vector3
         (
@@ -333,11 +334,11 @@ public class MazeGenerator : MonoBehaviour {
             {
 
                 theMaze[x, z].cellCenter = currentCellCenter;
-                Debug.Log(
+                /*Debug.Log(
                     "Current Cell ID: " + theMaze[x, z].ID +
                     "\n X = " + theMaze[x, z].cellCenter.x +
                     "\n Z = " + theMaze[x, z].cellCenter.z + "\n"
-                    );
+                    );*/
 
                 GameObject cellFloor = (GameObject)Instantiate(floorPrefab);
                 cellFloor.transform.position = new Vector3(x*2*cellWidth, 0, z*2*cellWidth);
@@ -383,14 +384,18 @@ public class MazeGenerator : MonoBehaviour {
         //possibly return the resultling maze so it can be referenced
     }
 
-    public void getMaze(out Cell[,] theMaze, out int x, out int z)
+    public void getMaze(ref Cell[,] maze, out int x, out int z)
     {
-
         
-        theMaze = this.theMaze;
+
+        maze = this.theMaze;
         x = this.xSize;
         z = this.zSize;
+        
+            
     }
+
+    
 
     void consoleDebugMaze(ref Cell[,] theMaze, int xSize, int ySize)
     {
