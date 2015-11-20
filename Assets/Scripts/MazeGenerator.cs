@@ -165,7 +165,10 @@ public class MazeGenerator : MonoBehaviour {
 
         theMaze = new Cell[xSize, zSize];
         generateMaze(ref theMaze,xSize, zSize);
+        breakAdditionalWalls(ref theMaze);
         constructMaze(ref theMaze, xSize, zSize, cellWidth,1);
+        
+        
 	}
 
     /// <summary>
@@ -410,6 +413,50 @@ public class MazeGenerator : MonoBehaviour {
 
         //possibly return the resultling maze so it can be referenced
         Debug.Log("Number of Ceiling Pieces: " + ceilingPieces.Count);
+    }
+    /// <summary>
+    /// Breaks additional walls based on the size of the maze. The reason for this is we want there
+    /// to be more than one way to get from one cell to another.
+    /// </summary>
+    public void breakAdditionalWalls(ref Cell[,] theMaze)
+    {
+        int numRandomWallsToBreak = (xSize + zSize) / 4;
+        for (int i = 0; i < numRandomWallsToBreak; i++)
+        {
+            int randomX = Random.Range(1, xSize - 1);
+            int randomZ = Random.Range(1, zSize - 1);
+            int randomWall = Random.Range(0, 2);
+            //check the down wall first
+            if (randomWall == 0)
+            {
+                if (theMaze[randomX, randomZ].downBlocked)
+                {
+                    theMaze[randomX, randomZ].downBlocked = false;
+                    continue;
+                }
+                else if (theMaze[randomX, randomZ].rightBlocked)
+                {
+                    theMaze[randomX, randomZ].rightBlocked = false;
+                    continue;
+                }
+            }
+            //check the right wall first
+            else
+            {
+                if (theMaze[randomX, randomZ].rightBlocked)
+                {
+                    theMaze[randomX, randomZ].rightBlocked = false;
+                    continue;
+                }
+                else if (theMaze[randomX, randomZ].downBlocked)
+                {
+                    theMaze[randomX, randomZ].downBlocked = false;
+                    continue;
+                }
+            }
+            i--;
+
+        }
     }
 
     public void getMaze(ref Cell[,] maze, out int x, out int z)

@@ -398,7 +398,7 @@ public class EnemyAI : MonoBehaviour
         int random2 = Random.Range(0, 2);
         int x = currentCell.x;
         int z = currentCell.z;
-        //if the enemy hasn't turned in 3 times, fucking TURN.
+        //if the enemy hasn't turned in 3 times, TURN.
         if(countSinceTurn == 3)
         {
             switch(currentDirection)
