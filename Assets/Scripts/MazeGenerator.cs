@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections;
+using System.Collections.Generic;
 
 /// <summary>
 /// This struct is not actually a gameObject or anything. it will be used for
@@ -51,9 +51,10 @@ public class MazeGenerator : MonoBehaviour {
     /// we may be able to tweak the cell size.
     /// </summary>
     [SerializeField]
-    private GameObject wallPrefab, floorPrefab, cielingPrefab;
+    private GameObject wallPrefab, floorPrefab, ceilingPrefab;
 
-
+    //lists holding the floor and ceiling prefabs used in the mini-map revelation
+    public List<GameObject> ceilingPieces;
 
     
     /// <summary>
@@ -298,6 +299,8 @@ public class MazeGenerator : MonoBehaviour {
         {
             GameObject wall = (GameObject)Instantiate(wallPrefab);
             wall.transform.position = new Vector3(i* cellWidth, 0, -cellWidth);
+            GameObject ceiling = (GameObject)Instantiate(ceilingPrefab);
+            ceiling.transform.position = new Vector3(i * cellWidth, wallHeight, -cellWidth);
         }
         /*
         for(int i = -1; i <= xSize*2; i += 1)
@@ -311,6 +314,8 @@ public class MazeGenerator : MonoBehaviour {
         {
             GameObject wall = (GameObject)Instantiate(wallPrefab);
             wall.transform.position = new Vector3(-cellWidth, 0, i * cellWidth);
+            GameObject ceiling = (GameObject)Instantiate(ceilingPrefab);
+            ceiling.transform.position = new Vector3(-cellWidth, wallHeight, i * cellWidth);
         }
         /*
         for(int i = 0; i < zSize*2; i += 1)
@@ -344,32 +349,54 @@ public class MazeGenerator : MonoBehaviour {
                 cellFloor.transform.position = new Vector3(x*2*cellWidth, 0, z*2*cellWidth);
                 GameObject downWall, rightWall, centerPiece;
 
+                //instantiate the ceiling prefab here at the same location as the floor just higher (wallHeight) --------------------------------------------------------------------
+                GameObject ceiling = (GameObject)Instantiate(ceilingPrefab);
+                ceiling.transform.position = new Vector3(x*2*cellWidth, wallHeight, z*2* cellWidth);
+                ceilingPieces.Add(ceiling);
+
                 //placeing the cell's down wall
-                if(theMaze[x,z].downBlocked || z == zSize -1)
+                if (theMaze[x,z].downBlocked || z == zSize -1)
                 {
                     downWall = (GameObject)Instantiate(wallPrefab);
+                    downWall.transform.position = new Vector3(x * 2 * cellWidth, 0, z * 2 * cellWidth + cellWidth);
+                    ceiling = (GameObject)Instantiate(ceilingPrefab);
+                    ceiling.transform.position = new Vector3(x * 2 * cellWidth, wallHeight, z * 2 * cellWidth + cellWidth);
                 }
                 else
                 {
                     downWall = (GameObject)Instantiate(floorPrefab);
+                    downWall.transform.position = new Vector3(x * 2 * cellWidth, 0, z * 2 * cellWidth + cellWidth);
+
+                    //instantiate the ceiling prefab here at the same location as the floor just higher (wallHeight) --------------------------------------------------------------------
+                    ceiling = (GameObject)Instantiate(ceilingPrefab);
+                    ceiling.transform.position = new Vector3(x * 2 * cellWidth, wallHeight, z * 2 * cellWidth + cellWidth);
+                    ceilingPieces.Add(ceiling);
                 }
-                
-                downWall.transform.position = new Vector3(x * 2 * cellWidth, 0, z * 2 * cellWidth + cellWidth);
-                
+
+
                 //placing the cell's right wall
-                if(theMaze[x,z].rightBlocked || x == xSize -1)
+                if (theMaze[x,z].rightBlocked || x == xSize -1)
                 {
                     rightWall = (GameObject)Instantiate(wallPrefab);
+                    rightWall.transform.position = new Vector3(x * 2 * cellWidth + cellWidth, 0, z * 2 * cellWidth);
+                    ceiling = (GameObject)Instantiate(ceilingPrefab);
+                    ceiling.transform.position = new Vector3(x * 2 * cellWidth + cellWidth, wallHeight, z * 2 * cellWidth);
                 }
                 else
                 {
                     rightWall = (GameObject)Instantiate(floorPrefab);
+                    rightWall.transform.position = new Vector3(x * 2 * cellWidth + cellWidth, 0, z * 2 * cellWidth);
+                    //instantiate the ceiling prefab here at the same location as the floor just higher (wallHeight) --------------------------------------------------------------------
+                    ceiling = (GameObject)Instantiate(ceilingPrefab);
+                    ceiling.transform.position = new Vector3(x * 2 * cellWidth + cellWidth, wallHeight, z * 2 * cellWidth);
+                    ceilingPieces.Add(ceiling);
                 }
-                
-                rightWall.transform.position = new Vector3(x * 2 * cellWidth + cellWidth, 0, z * 2 * cellWidth);
+
 
                 centerPiece = (GameObject)Instantiate(wallPrefab);
                 centerPiece.transform.position = new Vector3(x * 2 * cellWidth + cellWidth, 0, z * 2 * cellWidth + cellWidth);
+                ceiling = (GameObject)Instantiate(ceilingPrefab);
+                ceiling.transform.position = new Vector3(x * 2 * cellWidth + cellWidth, wallHeight, z * 2 * cellWidth + cellWidth);
 
                 //We need to account for the width of the walls, this should do
                 currentCellCenter.x += cellWidth * 2;
@@ -382,6 +409,7 @@ public class MazeGenerator : MonoBehaviour {
         //Add the prefabs for the walls left in theMaze
 
         //possibly return the resultling maze so it can be referenced
+        Debug.Log("Number of Ceiling Pieces: " + ceilingPieces.Count);
     }
 
     public void getMaze(ref Cell[,] maze, out int x, out int z)
