@@ -56,7 +56,10 @@ public class MazeGenerator : MonoBehaviour {
     //lists holding the floor and ceiling prefabs used in the mini-map revelation
     public List<GameObject> ceilingPieces;
 
-    
+    //This bool will be set to true when the maze is done constructing and is ready to be returned
+    //to the GameManager
+    private bool readyToReturn = false;
+
     /// <summary>
     /// This Disjoint Set implements the Union/ Find algorithms with path 
     /// compression
@@ -167,8 +170,9 @@ public class MazeGenerator : MonoBehaviour {
         generateMaze(ref theMaze,xSize, zSize);
         breakAdditionalWalls(ref theMaze);
         constructMaze(ref theMaze, xSize, zSize, cellWidth,1);
-        
-        
+
+        //done with maze construction, so we're ready to return the maze to the Game Manager.
+        readyToReturn = true;
 	}
 
     /// <summary>
@@ -459,9 +463,11 @@ public class MazeGenerator : MonoBehaviour {
         }
     }
 
-    public void getMaze(ref Cell[,] maze, out int x, out int z)
+    public void getMaze(ref Cell[,] maze, ref int x, ref int z)
     {
-        
+        //If the maze is not done constructing, don't return it.
+        if (!readyToReturn)
+            return;
 
         maze = this.theMaze;
         x = this.xSize;
