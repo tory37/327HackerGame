@@ -188,9 +188,9 @@ public class MazeGenerator : MonoBehaviour {
 
 
         //Generate the default "All walls filled" maze
-        for(int z = 0; z < zSize; z++)
+        for(int x = 0; x < xSize; x++)
         {
-            for(int x = 0; x < xSize; x++)
+            for(int z = 0; z < zSize; z++)
             {
                 theMaze[x, z] = new Cell(currentCellID, x, z);
                 
