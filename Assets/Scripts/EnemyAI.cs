@@ -16,7 +16,7 @@ public class EnemyAI : MonoBehaviour
     state currentState;
 
     Cell currentCell, goalCell;
-    private int xSize, zSize;
+    private int xSize, zSize, countSinceTurn;
     Vector3 movement, goal;
 
     void Awake()
@@ -393,10 +393,99 @@ public class EnemyAI : MonoBehaviour
 
     void checkVoluntaryChangeDirection()
     {
+
         int random1 = Random.Range(0, 2);
         int random2 = Random.Range(0, 2);
         int x = currentCell.x;
         int z = currentCell.z;
+        //if the enemy hasn't turned in 3 times, fucking TURN.
+        if(countSinceTurn == 3)
+        {
+            switch(currentDirection)
+            {
+                case direction.down:
+                    //try to turn right
+                    if(!currentCell.rightBlocked)
+                    {
+                        currentDirection = direction.right;
+                        countSinceTurn = 0;
+                        return;
+                    }
+                    //try to turn left
+                    if (x != 0)
+                    {
+                        if (!GameManager.Instance.getCell(x - 1, z).rightBlocked)
+                        {
+                            currentDirection = direction.left;
+                            countSinceTurn = 0;
+                            return;
+                        }
+                    }
+                    
+                break;
+                case direction.up:
+                //try to turn right
+                if (!currentCell.rightBlocked)
+                {
+                    currentDirection = direction.right;
+                    countSinceTurn = 0;
+                    return;
+                }
+                //try to turn left
+                if (x != 0)
+                {
+                    if (!GameManager.Instance.getCell(x - 1, z).rightBlocked)
+                    {
+                        currentDirection = direction.left;
+                        countSinceTurn = 0;
+                        return;
+                    }
+                }
+
+                break;
+                case direction.left:
+                    //try to turn up
+                    if(z != 0)
+                    {
+                        if(!GameManager.Instance.getCell(x, z - 1).downBlocked)
+                        {
+                            currentDirection = direction.up;
+                            countSinceTurn = 0;
+                            return;
+                        }
+                    }
+                    //try to turn down
+                    if(!currentCell.downBlocked)
+                    {
+                        currentDirection = direction.down;
+                        countSinceTurn = 0;
+                        return;
+                    }
+
+                break;
+                case direction.right:
+                //try to turn up
+                if (z != 0)
+                {
+                    if (!GameManager.Instance.getCell(x, z - 1).downBlocked)
+                    {
+                        currentDirection = direction.up;
+                        countSinceTurn = 0;
+                        return;
+                    }
+                }
+                //try to turn down
+                if (!currentCell.downBlocked)
+                {
+                    currentDirection = direction.down;
+                    countSinceTurn = 0;
+                    return;
+                }
+
+                break;
+
+            }
+        }
         switch(currentDirection)
         {
             case direction.down:
@@ -408,6 +497,7 @@ public class EnemyAI : MonoBehaviour
                         if (random2 == 1)
                         {
                             currentDirection = direction.right;
+                            countSinceTurn = 0;
                             return;
                         }
                     }
@@ -419,6 +509,7 @@ public class EnemyAI : MonoBehaviour
                             if(random2 == 1)
                             {
                                 currentDirection = direction.left;
+                                countSinceTurn = 0;
                                 return;
                             }
                         }
@@ -434,6 +525,7 @@ public class EnemyAI : MonoBehaviour
                             if (random2 == 1)
                             {
                                 currentDirection = direction.left;
+                                countSinceTurn = 0;
                                 return;
                             }
                         }
@@ -444,6 +536,7 @@ public class EnemyAI : MonoBehaviour
                         if (random2 == 1)
                         {
                             currentDirection = direction.right;
+                            countSinceTurn = 0;
                             return;
                         }
                     }
@@ -459,6 +552,7 @@ public class EnemyAI : MonoBehaviour
                     if (random2 == 1)
                     {
                         currentDirection = direction.right;
+                        countSinceTurn = 0;
                         return;
                     }
                 }
@@ -470,6 +564,7 @@ public class EnemyAI : MonoBehaviour
                         if (random2 == 1)
                         {
                             currentDirection = direction.left;
+                            countSinceTurn = 0;
                             return;
                         }
                     }
@@ -485,6 +580,7 @@ public class EnemyAI : MonoBehaviour
                         if (random2 == 1)
                         {
                             currentDirection = direction.left;
+                            countSinceTurn = 0;
                             return;
                         }
                     }
@@ -495,6 +591,7 @@ public class EnemyAI : MonoBehaviour
                     if (random2 == 1)
                     {
                         currentDirection = direction.right;
+                        countSinceTurn = 0;
                         return;
                     }
                 }
@@ -513,6 +610,7 @@ public class EnemyAI : MonoBehaviour
                             if(random2 == 1)
                             {
                                 currentDirection = direction.up;
+                                countSinceTurn = 0;
                                 return;
                             }
                         }
@@ -524,6 +622,7 @@ public class EnemyAI : MonoBehaviour
                         if(random2 == 1)
                         {
                             currentDirection = direction.down;
+                            countSinceTurn = 0;
                             return;
                         }
                     }
@@ -536,6 +635,7 @@ public class EnemyAI : MonoBehaviour
                         if (random2 == 1)
                         {
                             currentDirection = direction.down;
+                            countSinceTurn = 0;
                             return;
                         }
                     }
@@ -549,6 +649,7 @@ public class EnemyAI : MonoBehaviour
                             if (random2 == 1)
                             {
                                 currentDirection = direction.up;
+                                countSinceTurn = 0;
                                 return;
                             }
                         }
@@ -569,6 +670,7 @@ public class EnemyAI : MonoBehaviour
                         if (random2 == 1)
                         {
                             currentDirection = direction.up;
+                            countSinceTurn = 0;
                             return;
                         }
                     }
@@ -580,6 +682,7 @@ public class EnemyAI : MonoBehaviour
                     if (random2 == 1)
                     {
                         currentDirection = direction.down;
+                        countSinceTurn = 0;
                         return;
                     }
                 }
@@ -592,6 +695,7 @@ public class EnemyAI : MonoBehaviour
                     if (random2 == 1)
                     {
                         currentDirection = direction.down;
+                        countSinceTurn = 0;
                         return;
                     }
                 }
@@ -605,6 +709,7 @@ public class EnemyAI : MonoBehaviour
                         if (random2 == 1)
                         {
                             currentDirection = direction.up;
+                            countSinceTurn = 0;
                             return;
                         }
                     }
@@ -616,6 +721,7 @@ public class EnemyAI : MonoBehaviour
 
 
         }
+        countSinceTurn++;
 
 
     }

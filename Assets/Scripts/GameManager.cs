@@ -7,12 +7,13 @@ public class GameManager : MonoBehaviour
     private GameObject PlayerRef, mazeGenerator, enemyPrefab;
 
     private MazeGenerator mazeGeneratorRef;
-
+    [SerializeField]
+    private int numEnemies;
 
     private GameObject[] enemies;
 
     private Cell[,] mazeRef;
-    private int xMax, zMax, numEnemies;
+    private int xMax, zMax;
 
     private static GameManager instance;
 
@@ -48,7 +49,6 @@ public class GameManager : MonoBehaviour
     {
         mazeGeneratorRef = mazeGenerator.GetComponent<MazeGenerator>();
         mazeGeneratorRef.getMaze(ref mazeRef, out xMax, out zMax);
-        numEnemies = (xMax + zMax) / 10;
         for(int i = 0; i < numEnemies; i++)
         {
             Instantiate(enemyPrefab);

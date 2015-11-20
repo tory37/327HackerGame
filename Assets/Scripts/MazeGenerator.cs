@@ -189,9 +189,9 @@ public class MazeGenerator : MonoBehaviour {
 
 
         //Generate the default "All walls filled" maze
-        for(int x = 0; x < xSize; x++)
+        for(int z = 0; z < zSize; z++)
         {
-            for(int z = 0; z < zSize; z++)
+            for(int x = 0; x < xSize; x++)
             {
                 theMaze[x, z] = new Cell(currentCellID, x, z);
                 
@@ -268,12 +268,12 @@ public class MazeGenerator : MonoBehaviour {
         //placement of the walls
         for(int i = 0; i < xSize; i++)
         {
-            theMaze[i, zSize - 1].downBlocked = false;
+            theMaze[i, zSize - 1].downBlocked = true;
         }
 
         for(int i = 0; i < zSize; i++)
         {
-            theMaze[xSize - 1, i].rightBlocked = false;
+            theMaze[xSize - 1, i].rightBlocked = true;
         }
 
     }
@@ -327,13 +327,13 @@ public class MazeGenerator : MonoBehaviour {
 
         //The position of the cell will be iteratively determined, starting in 
         //the first cell
-        currentCellCenter = new Vector3(cellWidth / 2f, 0, cellWidth / 2f);
+        currentCellCenter = new Vector3(0, 0, 0);
 
 
         //Add the prefabs for the internal "support beams"
         for(int z = 0; z < zSize; z++)
         {
-            currentCellCenter.x = cellWidth / 2f;
+            currentCellCenter.x = 0;
 
             for(int x = 0; x < xSize; x++)
             {
@@ -355,7 +355,7 @@ public class MazeGenerator : MonoBehaviour {
                 ceilingPieces.Add(ceiling);
 
                 //placeing the cell's down wall
-                if (theMaze[x,z].downBlocked || z == zSize -1)
+                if (theMaze[x,z].downBlocked)
                 {
                     downWall = (GameObject)Instantiate(wallPrefab);
                     downWall.transform.position = new Vector3(x * 2 * cellWidth, 0, z * 2 * cellWidth + cellWidth);
@@ -375,7 +375,7 @@ public class MazeGenerator : MonoBehaviour {
 
 
                 //placing the cell's right wall
-                if (theMaze[x,z].rightBlocked || x == xSize -1)
+                if (theMaze[x,z].rightBlocked)
                 {
                     rightWall = (GameObject)Instantiate(wallPrefab);
                     rightWall.transform.position = new Vector3(x * 2 * cellWidth + cellWidth, 0, z * 2 * cellWidth);
