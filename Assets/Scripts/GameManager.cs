@@ -48,8 +48,11 @@ public class GameManager : MonoBehaviour
 	void Start () 
     {
         mazeGeneratorRef = mazeGenerator.GetComponent<MazeGenerator>();
-        while(mazeRef == null)
+        while (mazeRef == null)
+        {
             mazeGeneratorRef.getMaze(ref mazeRef, ref xMax, ref zMax);
+            
+        }
         for(int i = 0; i < numEnemies; i++)
         {
             Instantiate(enemyPrefab);

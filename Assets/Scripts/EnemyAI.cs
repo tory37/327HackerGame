@@ -63,7 +63,7 @@ public class EnemyAI : MonoBehaviour
         }
 
         transform.position += movement * Time.deltaTime * enemySpeed;
-        if((transform.position - goal).magnitude < .5)
+        if((transform.position - goal).magnitude < .1)
         {
 
             transform.position = goal;
@@ -83,13 +83,24 @@ public class EnemyAI : MonoBehaviour
             updateGoalCell();
         }
 
-        Debug.Log(" X " + goalCell.x);
-        Debug.Log(" Z " + goalCell.z);
+        //Debug.Log(" X " + goalCell.x);
+        //Debug.Log(" Z " + goalCell.z);
         
 
         
 
     }
+
+    void OnCollisionEnter(Collision other)
+    {
+        
+        if (other.gameObject.tag == "wall")
+        {
+            transform.position = goal;
+            Debug.Log("HIT");
+        }
+    }
+
     /// <summary>
     /// This function updates the goal cell.
     /// </summary>
