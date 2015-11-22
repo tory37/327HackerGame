@@ -56,7 +56,10 @@ public class MazeGenerator : MonoBehaviour {
     //lists holding the floor and ceiling prefabs used in the mini-map revelation
     public List<GameObject> ceilingPieces;
 
-    
+    //This bool will be set to true when the maze is done constructing and is ready to be returned
+    //to the GameManager
+    private bool readyToReturn = false;
+
     /// <summary>
     /// This Disjoint Set implements the Union/ Find algorithms with path 
     /// compression
@@ -165,7 +168,11 @@ public class MazeGenerator : MonoBehaviour {
 
         theMaze = new Cell[xSize, zSize];
         generateMaze(ref theMaze,xSize, zSize);
+        breakAdditionalWalls(ref theMaze);
         constructMaze(ref theMaze, xSize, zSize, cellWidth,1);
+
+        //done with maze construction, so we're ready to return the maze to the Game Manager.
+        readyToReturn = true;
 	}
 
     /// <summary>
@@ -268,12 +275,12 @@ public class MazeGenerator : MonoBehaviour {
         //placement of the walls
         for(int i = 0; i < xSize; i++)
         {
-            theMaze[i, zSize - 1].downBlocked = false;
+            theMaze[i, zSize - 1].downBlocked = true;
         }
 
         for(int i = 0; i < zSize; i++)
         {
-            theMaze[xSize - 1, i].rightBlocked = false;
+            theMaze[xSize - 1, i].rightBlocked = true;
         }
 
     }
@@ -327,13 +334,13 @@ public class MazeGenerator : MonoBehaviour {
 
         //The position of the cell will be iteratively determined, starting in 
         //the first cell
-        currentCellCenter = new Vector3(cellWidth / 2f, 0, cellWidth / 2f);
+        currentCellCenter = new Vector3(0, 0, 0);
 
 
         //Add the prefabs for the internal "support beams"
         for(int z = 0; z < zSize; z++)
         {
-            currentCellCenter.x = cellWidth / 2f;
+            currentCellCenter.x = 0;
 
             for(int x = 0; x < xSize; x++)
             {
@@ -355,7 +362,7 @@ public class MazeGenerator : MonoBehaviour {
                 ceilingPieces.Add(ceiling);
 
                 //placeing the cell's down wall
-                if (theMaze[x,z].downBlocked || z == zSize -1)
+                if (theMaze[x,z].downBlocked)
                 {
                     downWall = (GameObject)Instantiate(wallPrefab);
                     downWall.transform.position = new Vector3(x * 2 * cellWidth, 0, z * 2 * cellWidth + cellWidth);
@@ -375,7 +382,7 @@ public class MazeGenerator : MonoBehaviour {
 
 
                 //placing the cell's right wall
-                if (theMaze[x,z].rightBlocked || x == xSize -1)
+                if (theMaze[x,z].rightBlocked)
                 {
                     rightWall = (GameObject)Instantiate(wallPrefab);
                     rightWall.transform.position = new Vector3(x * 2 * cellWidth + cellWidth, 0, z * 2 * cellWidth);
@@ -411,10 +418,56 @@ public class MazeGenerator : MonoBehaviour {
         //possibly return the resultling maze so it can be referenced
         Debug.Log("Number of Ceiling Pieces: " + ceilingPieces.Count);
     }
-
-    public void getMaze(ref Cell[,] maze, out int x, out int z)
+    /// <summary>
+    /// Breaks additional walls based on the size of the maze. The reason for this is we want there
+    /// to be more than one way to get from one cell to another.
+    /// </summary>
+    public void breakAdditionalWalls(ref Cell[,] theMaze)
     {
-        
+        int numRandomWallsToBreak = (xSize + zSize) / 4;
+        for (int i = 0; i < numRandomWallsToBreak; i++)
+        {
+            int randomX = Random.Range(1, xSize - 1);
+            int randomZ = Random.Range(1, zSize - 1);
+            int randomWall = Random.Range(0, 2);
+            //check the down wall first
+            if (randomWall == 0)
+            {
+                if (theMaze[randomX, randomZ].downBlocked)
+                {
+                    theMaze[randomX, randomZ].downBlocked = false;
+                    continue;
+                }
+                else if (theMaze[randomX, randomZ].rightBlocked)
+                {
+                    theMaze[randomX, randomZ].rightBlocked = false;
+                    continue;
+                }
+            }
+            //check the right wall first
+            else
+            {
+                if (theMaze[randomX, randomZ].rightBlocked)
+                {
+                    theMaze[randomX, randomZ].rightBlocked = false;
+                    continue;
+                }
+                else if (theMaze[randomX, randomZ].downBlocked)
+                {
+                    theMaze[randomX, randomZ].downBlocked = false;
+                    continue;
+                }
+            }
+            i--;
+
+        }
+    }
+
+    public void getMaze(ref Cell[,] maze, ref int x, ref int z)
+    {
+        //If the maze is not done constructing, don't return it.
+        if (!readyToReturn)
+            return;
 
         maze = this.theMaze;
         x = this.xSize;

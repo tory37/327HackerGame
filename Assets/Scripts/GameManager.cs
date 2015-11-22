@@ -4,11 +4,12 @@ using System.Collections;
 public class GameManager : MonoBehaviour 
 {
     [SerializeField]
-    private GameObject PlayerRef, mazeGenerator;
+    private GameObject PlayerRef, mazeGenerator, enemyPrefab;
 
     private MazeGenerator mazeGeneratorRef;
-
     [SerializeField]
+    private int numEnemies;
+
     private GameObject[] enemies;
 
     private Cell[,] mazeRef;
@@ -47,7 +48,12 @@ public class GameManager : MonoBehaviour
 	void Start () 
     {
         mazeGeneratorRef = mazeGenerator.GetComponent<MazeGenerator>();
-        mazeGeneratorRef.getMaze(ref mazeRef, out xMax, out zMax);
+        while(mazeRef == null)
+            mazeGeneratorRef.getMaze(ref mazeRef, ref xMax, ref zMax);
+        for(int i = 0; i < numEnemies; i++)
+        {
+            Instantiate(enemyPrefab);
+        }
 	}
 	
 	// Update is called once per frame
@@ -59,6 +65,12 @@ public class GameManager : MonoBehaviour
     public void getMaze(out Cell[,] theMaze, out int x, out int z)
     {
         theMaze = mazeRef;
+        x = xMax;
+        z = zMax;
+    }
+
+    public void getMazeSize(out int x, out int z)
+    {
         x = xMax;
         z = zMax;
     }
