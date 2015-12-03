@@ -44,23 +44,9 @@ public class EnemyAI : MonoBehaviour
         
         
 
-        // Move enemy to adjacent cell
-        if(currentDirection == direction.down)
-        {
-            movement = new Vector3(0, 0, 1);
-        }
-        else if(currentDirection == direction.up)
-        {
-            movement = new Vector3(0, 0, -1);
-        }
-        else if(currentDirection == direction.left)
-        {
-            movement = new Vector3(-1, 0, 0);
-        }
-        else
-        {
-            movement = new Vector3(1, 0, 0);
-        }
+        
+        // Move enemy towards the goal
+        movement = (goal - transform.position).normalized;
 
         transform.position += movement * Time.deltaTime * enemySpeed;
         if((transform.position - goal).magnitude < .1)
@@ -79,27 +65,17 @@ public class EnemyAI : MonoBehaviour
             }
 
             
-
+            // Update the goal cell according to the update position.
             updateGoalCell();
         }
 
-        //Debug.Log(" X " + goalCell.x);
-        //Debug.Log(" Z " + goalCell.z);
         
 
         
 
     }
 
-    void OnCollisionEnter(Collision other)
-    {
-        
-        if (other.gameObject.tag == "wall")
-        {
-            transform.position = goal;
-            Debug.Log("HIT");
-        }
-    }
+    
 
     /// <summary>
     /// This function updates the goal cell.
