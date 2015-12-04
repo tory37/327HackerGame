@@ -483,7 +483,8 @@ public class MazeGenerator : MonoBehaviour {
 	private void placeCamera()
 	{
 		miniMapCamera.transform.position = new Vector3( (xSize-1) * cellWidth, 500f, (zSize-1) * cellWidth );
-		miniMapCamera.orthographicSize = xSize * zSize / 2;
+		//miniMapCamera.orthographicSize = xSize * zSize / Mathf.Log(zSize);
+        miniMapCamera.orthographicSize = zSize * 5;
 
 	}
 
