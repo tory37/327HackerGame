@@ -228,5 +228,8 @@ public class MonoFSMInspector : Editor {
 
 			EditorGUI.indentLevel--;
 		}
+
+		if ( GUI.changed )
+			EditorUtility.SetDirty( target );
 	}
 }
