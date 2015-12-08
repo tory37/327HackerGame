@@ -16,24 +16,20 @@ public class PlayerTeleport : MonoBehaviour {
         //Will check to see if the user has pressed E
         if(Input.GetKeyDown(KeyCode.E))
         {
-
-            
-
+            //GetAimedCell;
         }
 	
 	}
-    /*
-    Cell GetAimedCell()
-    {
-        Vector3 playerFacing = transform.forward;
-        Ray checkWall = new Ray(transform.position, playerFacing);
-        RaycastHit wallMaybe;
-        if(Physics.Raycast(checkWall, out Wall, 5,LayerMask.NameToLayer("Walls")))
-        {
-            wallMaybe.distance
-        }
-    }
-    */
+    //Cell GetAimedCell()
+    //{
+    //    Vector3 playerFacing = transform.forward;
+    //    Ray checkWall = new Ray(transform.position, playerFacing);
+    //    RaycastHit wallMaybe;
+    //    if(Physics.Raycast(checkWall, out wallMaybe, 5,LayerMask.NameToLayer("Walls")))
+    //    {
+            
+    //    }
+    //}
     void GetCellThroughWall(Cell playerCell)
     {
 

@@ -66,7 +66,7 @@ public class GameManager : MonoBehaviour
 	// Update is called once per frame
 	void Update () 
     {
-	
+	    //Debug.Log("Player in Cell: " + this.GetCellPlayerIsIn().x + ", " +this.GetCellPlayerIsIn().z);
 	}
     // A way for every object in the scene to access the maze if need be in the future.
     public void getMaze(out Cell[,] theMaze, out int x, out int z)
@@ -82,9 +82,38 @@ public class GameManager : MonoBehaviour
         z = zMax;
     }
 
+    /// <summary>
+    /// Returns the cell whose x and z values are the passed values
+    /// </summary>
+    /// <param name="x"></param>
+    /// <param name="z"></param>
+    /// <returns>A cell in the maze, or a cell with ID == -1 otherwise</returns>
     public Cell getCell(int x, int z)
     {
-        return instance.mazeRef[x, z];
+        if(x < 0 || z < 0 || x >= xMax || z >= zMax)
+            return instance.mazeRef[x, z];
+
+        return new Cell(-1, -1, -1);
+    }
+
+    /// <summary>
+    /// Returns the cell that the given position is in, or a cell with ID == -1
+    /// if the position is not in the maze.
+    /// </summary>
+    /// <returns>a Cell in the maze</returns>
+    public Cell GetCellPositionIsIn(Vector3 position)
+    {
+        float positionX, positionZ;
+        int cellX, cellZ;
+
+        positionX = position.x + 2.5f;
+        positionZ = position.z + 2.5f;
+
+        cellX = (int) positionX / 10;
+        cellZ = (int) positionZ / 10;
+
+        return this.getCell(cellX, cellZ);
+
     }
     
 
