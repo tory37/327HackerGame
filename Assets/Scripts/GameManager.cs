@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+enum direction { up, down, left, right };
+
 public class GameManager : MonoBehaviour 
 {
     [SerializeField]

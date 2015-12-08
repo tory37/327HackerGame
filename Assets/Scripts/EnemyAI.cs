@@ -8,8 +8,6 @@ public class EnemyAI : MonoBehaviour
 {
     [SerializeField]
     private float enemySpeed;
-
-    enum direction {up, down, left, right};
     enum state { wandering, chasing };
 
     direction currentDirection;
