@@ -77,6 +77,10 @@ public class EnemyWanderingState : State
     public override void OnEnter()
     {
         GetComponent<Renderer>().material.color = Color.blue;
+        if(needToChangeDirection())
+        {
+            changeDirection();
+        }
     }
     public override void CheckTransitions()
     {

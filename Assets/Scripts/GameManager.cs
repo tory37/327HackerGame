@@ -117,7 +117,10 @@ public class GameManager : MonoBehaviour
 
     }
     
-
+    public Vector3 GetPlayerPosition()
+    {
+        return PlayerRef.transform.position;
+    }
 
 
 
