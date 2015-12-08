@@ -1,15 +1,18 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour {
 
-	// Use this for initialization
-	void Start () {
-	
+	void Awake()
+	{
+		DontDestroyOnLoad( transform.gameObject );
 	}
-	
-	// Update is called once per frame
-	void Update () {
-	
+
+	public void Transition(string sceneName)
+	{
+		Application.LoadLevel( sceneName );
 	}
+
+
 }
