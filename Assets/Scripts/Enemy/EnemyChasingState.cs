@@ -13,7 +13,7 @@ public class EnemyChasingState : State
 
     public override void Initialize(MonoFSM callingfsm)
     {
-
+        enemyfsm = (EnemyFSM)callingfsm;
     }
 
     public override void OnEnter()
@@ -24,5 +24,14 @@ public class EnemyChasingState : State
     public override void OnUpdate()
     {
 
+    }
+
+    public override void CheckTransitions()
+    {
+        Collider[] col = Physics.OverlapSphere(transform.position, 5, 1024);
+        if (col.Length == 0)
+        {
+            enemyfsm.AttemptTransition(EnemyStates.Wandering);
+        }
     }
 }

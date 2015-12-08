@@ -74,7 +74,10 @@ public class EnemyWanderingState : State
 
 
     }
-
+    public override void OnEnter()
+    {
+        GetComponent<Renderer>().material.color = Color.blue;
+    }
     public override void CheckTransitions()
     {
         Collider[] col = Physics.OverlapSphere(transform.position, 5, 1024);
