@@ -66,8 +66,9 @@ public class GameManager : MonoBehaviour
 	// Update is called once per frame
 	void Update () 
     {
-	
+		CheckForPause();
 	}
+
     // A way for every object in the scene to access the maze if need be in the future.
     public void getMaze(out Cell[,] theMaze, out int x, out int z)
     {
@@ -87,8 +88,14 @@ public class GameManager : MonoBehaviour
         return instance.mazeRef[x, z];
     }
     
-
-
-
-
+	void CheckForPause()
+	{
+		if (Input.GetButtonDown("Pause"))
+		{
+			UIManager.Instance.Show("PauseMenu");
+			Cursor.lockState = CursorLockMode.None;
+			Cursor.visible = true;
+			//Time.timeScale = 0;
+		}
+	}
 }
