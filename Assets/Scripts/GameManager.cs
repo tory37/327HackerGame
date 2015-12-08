@@ -91,16 +91,16 @@ public class GameManager : MonoBehaviour
     /// Returns the cell that the player is currently in
     /// </summary>
     /// <returns>a Cell in the maze</returns>
-    public Cell GetCellPlayerIsIn()
+    public Cell GetCellPositionIsIn(Vector3 position)
     {
-        float playerX, playerZ;
+        float positionX, positionZ;
         int cellX, cellZ;
 
-        playerX = PlayerRef.transform.position.x + 2.5f;
-        playerZ = PlayerRef.transform.position.z + 2.5f;
+        positionX = position.x + 2.5f;
+        positionZ = position.z + 2.5f;
 
-        cellX = (int) playerX / 10;
-        cellZ = (int) playerZ / 10;
+        cellX = (int) positionX / 10;
+        cellZ = (int) positionZ / 10;
 
         return this.getCell(cellX, cellZ);
 
