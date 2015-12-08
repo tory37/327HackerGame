@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 2ef4b780e26cfe0409ebc24e280e9946
+timeCreated: 1449612478
+licenseType: Free
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - Invisibility: {fileID: 190288, guid: 8b72251ff5dee6446936915a41096686, type: 2}
+  - SpeedBoost: {fileID: 147510, guid: e9fde9bff23185c439615591e8542efa, type: 2}
+  - Stun: {fileID: 158460, guid: 0e3989909d557424bb01b6a433d879e0, type: 2}
+  - Teleport: {fileID: 104402, guid: 090b7281a69144c47b24db12a3667518, type: 2}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

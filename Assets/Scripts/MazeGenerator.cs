@@ -417,10 +417,6 @@ public class MazeGenerator : MonoBehaviour {
         }
 
         this.theMaze = theMaze;
-        //Add the prefabs for the walls left in theMaze
-
-        //possibly return the resultling maze so it can be referenced
-        Debug.Log("Number of Ceiling Pieces: " + ceilingPieces.Count);
     }
     /// <summary>
     /// Breaks additional walls based on the size of the maze. The reason for this is we want there
