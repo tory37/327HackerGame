@@ -713,8 +713,19 @@ public class EnemyAI : MonoBehaviour
 
     void setInitialLocation()
     {
-        int randomX = Random.Range(0, xSize);
-        int randomZ = Random.Range(0, zSize);
+        int randomNum = Random.Range(0, 2);
+        int randomX, randomZ;
+        if(randomNum == 0)
+        {
+            randomX = Random.Range(0, xSize);
+            randomZ = Random.Range(zSize / 2, zSize);
+        }
+        else
+        {
+            randomX = Random.Range(xSize / 2, xSize);
+            randomZ = Random.Range(0, zSize);
+        }
+        
         float XInUnity = GameManager.Instance.getCell(randomX, randomZ).cellCenter.x;
         float ZInUnity = GameManager.Instance.getCell(randomX, randomZ).cellCenter.z;
         transform.position = new Vector3(XInUnity, 1f, ZInUnity);
