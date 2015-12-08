@@ -8,8 +8,6 @@ public class EnemyAI : MonoBehaviour
 {
     [SerializeField]
     private float enemySpeed;
-
-    enum direction {up, down, left, right};
     enum state { wandering, chasing };
 
     direction currentDirection;
@@ -44,26 +42,12 @@ public class EnemyAI : MonoBehaviour
         
         
 
-        // Move enemy to adjacent cell
-        if(currentDirection == direction.down)
-        {
-            movement = new Vector3(0, 0, 1);
-        }
-        else if(currentDirection == direction.up)
-        {
-            movement = new Vector3(0, 0, -1);
-        }
-        else if(currentDirection == direction.left)
-        {
-            movement = new Vector3(-1, 0, 0);
-        }
-        else
-        {
-            movement = new Vector3(1, 0, 0);
-        }
+        
+        // Move enemy towards the goal
+        movement = (goal - transform.position).normalized;
 
         transform.position += movement * Time.deltaTime * enemySpeed;
-        if((transform.position - goal).magnitude < .5)
+        if((transform.position - goal).magnitude < .1)
         {
 
             transform.position = goal;
@@ -79,17 +63,18 @@ public class EnemyAI : MonoBehaviour
             }
 
             
-
+            // Update the goal cell according to the update position.
             updateGoalCell();
         }
 
-        Debug.Log(" X " + goalCell.x);
-        Debug.Log(" Z " + goalCell.z);
         
 
         
 
     }
+
+    
+
     /// <summary>
     /// This function updates the goal cell.
     /// </summary>
@@ -728,8 +713,19 @@ public class EnemyAI : MonoBehaviour
 
     void setInitialLocation()
     {
-        int randomX = Random.Range(0, xSize);
-        int randomZ = Random.Range(0, zSize);
+        int randomNum = Random.Range(0, 2);
+        int randomX, randomZ;
+        if(randomNum == 0)
+        {
+            randomX = Random.Range(0, xSize);
+            randomZ = Random.Range(zSize / 2, zSize);
+        }
+        else
+        {
+            randomX = Random.Range(xSize / 2, xSize);
+            randomZ = Random.Range(0, zSize);
+        }
+        
         float XInUnity = GameManager.Instance.getCell(randomX, randomZ).cellCenter.x;
         float ZInUnity = GameManager.Instance.getCell(randomX, randomZ).cellCenter.z;
         transform.position = new Vector3(XInUnity, 1f, ZInUnity);

@@ -45,6 +45,9 @@ public class MazeGenerator : MonoBehaviour {
     /// </summary>
     private Cell [,] theMaze;
 
+	[SerializeField]
+	private Camera miniMapCamera;
+
     /// <summary>
     /// the preFab that the walls will be generated from. It is suggested that the
     /// geometry of the wall is able to be stretched with minimal trouble, so that
@@ -171,6 +174,7 @@ public class MazeGenerator : MonoBehaviour {
         breakAdditionalWalls(ref theMaze);
         constructMaze(ref theMaze, xSize, zSize, cellWidth,1);
 
+		placeCamera();
         //done with maze construction, so we're ready to return the maze to the Game Manager.
         readyToReturn = true;
 	}
@@ -356,7 +360,7 @@ public class MazeGenerator : MonoBehaviour {
                 cellFloor.transform.position = new Vector3(x*2*cellWidth, 0, z*2*cellWidth);
                 GameObject downWall, rightWall, centerPiece;
 
-                //instantiate the ceiling prefab here at the same location as the floor just higher (wallHeight) --------------------------------------------------------------------
+                //instantiate the ceiling prefab here at the same location as the floor just higher (wallHeight) 
                 GameObject ceiling = (GameObject)Instantiate(ceilingPrefab);
                 ceiling.transform.position = new Vector3(x*2*cellWidth, wallHeight, z*2* cellWidth);
                 ceilingPieces.Add(ceiling);
@@ -374,7 +378,7 @@ public class MazeGenerator : MonoBehaviour {
                     downWall = (GameObject)Instantiate(floorPrefab);
                     downWall.transform.position = new Vector3(x * 2 * cellWidth, 0, z * 2 * cellWidth + cellWidth);
 
-                    //instantiate the ceiling prefab here at the same location as the floor just higher (wallHeight) --------------------------------------------------------------------
+                    //instantiate the ceiling prefab here at the same location as the floor just higher (wallHeight) 
                     ceiling = (GameObject)Instantiate(ceilingPrefab);
                     ceiling.transform.position = new Vector3(x * 2 * cellWidth, wallHeight, z * 2 * cellWidth + cellWidth);
                     ceilingPieces.Add(ceiling);
@@ -393,7 +397,7 @@ public class MazeGenerator : MonoBehaviour {
                 {
                     rightWall = (GameObject)Instantiate(floorPrefab);
                     rightWall.transform.position = new Vector3(x * 2 * cellWidth + cellWidth, 0, z * 2 * cellWidth);
-                    //instantiate the ceiling prefab here at the same location as the floor just higher (wallHeight) --------------------------------------------------------------------
+                    //instantiate the ceiling prefab here at the same location as the floor just higher (wallHeight)
                     ceiling = (GameObject)Instantiate(ceilingPrefab);
                     ceiling.transform.position = new Vector3(x * 2 * cellWidth + cellWidth, wallHeight, z * 2 * cellWidth);
                     ceilingPieces.Add(ceiling);
@@ -475,6 +479,14 @@ public class MazeGenerator : MonoBehaviour {
         
             
     }
+
+	private void placeCamera()
+	{
+		miniMapCamera.transform.position = new Vector3( (xSize-1) * cellWidth, 500f, (zSize-1) * cellWidth );
+		//miniMapCamera.orthographicSize = xSize * zSize / Mathf.Log(zSize);
+        miniMapCamera.orthographicSize = Mathf.Max(xSize*.8f,zSize) * 5;
+
+	}
 
     
 

@@ -1,13 +1,15 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+enum direction { up, down, left, right };
+
 public class GameManager : MonoBehaviour 
 {
     [SerializeField]
     private GameObject PlayerRef, mazeGenerator, enemyPrefab;
 
     private MazeGenerator mazeGeneratorRef;
-    [SerializeField]
+    
     private int numEnemies;
 
     private GameObject[] enemies;
@@ -48,8 +50,12 @@ public class GameManager : MonoBehaviour
 	void Start () 
     {
         mazeGeneratorRef = mazeGenerator.GetComponent<MazeGenerator>();
-        while(mazeRef == null)
+        while (mazeRef == null)
+        {
             mazeGeneratorRef.getMaze(ref mazeRef, ref xMax, ref zMax);
+            
+        }
+        numEnemies = (xMax + zMax) / 10;
         for(int i = 0; i < numEnemies; i++)
         {
             Instantiate(enemyPrefab);
