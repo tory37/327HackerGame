@@ -16,28 +16,35 @@ public class PlayerTeleport : MonoBehaviour {
         //Will check to see if the user has pressed E
         if(Input.GetKeyDown(KeyCode.E))
         {
-            //GetAimedCell;
+            Cell toTeleport = GetTeleport();
+            if(toTeleport.ID != -1)
+            {
+                transform.position = toTeleport.cellCenter + new Vector3(0,.5f,0);
+            }
         }
 	
 	}
-    //Cell GetAimedCell()
-    //{
-    //    Vector3 playerFacing = transform.forward;
-    //    Ray checkWall = new Ray(transform.position, playerFacing);
-    //    RaycastHit wallMaybe;
-    //    if(Physics.Raycast(checkWall, out wallMaybe, 5,LayerMask.NameToLayer("Walls")))
-    //    {
-            
-    //    }
-    //}
-    void GetCellThroughWall(Cell playerCell)
+    Cell GetTeleport()
     {
+        Debug.Log("Attempting Teleport!");
+        Vector3 playerFacing = transform.forward;
+        Ray checkWall = new Ray(transform.position, playerFacing);
+        RaycastHit wallMaybe;
+        Debug.Log("");
+        if(Physics.Raycast(checkWall, out wallMaybe, 5))
+        {
+            Debug.Log("Something was hit");
+            Vector3 teleportFromWallDistance = wallMaybe.transform.position
+                - transform.position;
+            Vector3 teleportTarget = wallMaybe.transform.position 
+                + teleportFromWallDistance;
 
-    }
-
-    void getCellAbovePlayer(Cell playerCell)
-    {
-
+            Cell toGoTo = theManager.GetCellPositionIsIn(teleportTarget);
+            Debug.Log("Jump from: "+
+                theManager.GetCellPositionIsIn(transform.position)+ " to "+ toGoTo.ID);
+            return toGoTo;
+        }
+        return new Cell(-1, -1, -1);
     }
 
 
