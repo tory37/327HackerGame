@@ -10,7 +10,55 @@ using System;
 /// the update methods of the states in their corresponding Unity functions.
 /// This also provides a method for transitioning between states correctly.
 /// </summary>
-public abstract class MonoFSM : MonoBehaviour {
+public abstract class MonoFSM : MonoBehaviour
+{
+
+	#region Editor Interface;
+
+	[SerializeField, HideInInspector]
+	public string StateEnumName;
+
+	[SerializeField, HideInInspector]
+	public bool LockEnumName = false;
+
+	[SerializeField, HideInInspector]
+	public bool IsStatesExpanded = false;
+
+	[SerializeField, HideInInspector]
+	public bool IsTransitionsExpanded = false;
+
+	[SerializeField, HideInInspector]
+	public bool IsChildValuesExpanded = false;
+
+	public List<int> StateKeys
+	{
+		get { return stateKeys; }
+		#if UNITY_EDITOR
+		set { stateKeys = value;}
+		#endif
+	}
+	[SerializeField, HideInInspector]
+	protected List<int> stateKeys = new List<int>();
+
+	public List<State> StateValues
+	{
+		get { return stateValues; }
+		#if UNITY_EDITOR
+		set { stateValues = value;}
+		#endif
+	}
+	[SerializeField, HideInInspector]
+	protected List<State> stateValues = new List<State>();
+
+	public List<FSMTransition> ValidTransitions
+	{
+		get { return validTransitions; }
+		#if UNITY_EDITOR
+		set { validTransitions = value;}
+		#endif
+	}
+
+	#endregion
 
 	/// <summary>
 	/// This is a list of states in the fsm
@@ -18,9 +66,10 @@ public abstract class MonoFSM : MonoBehaviour {
 	/// Best Practice:
 	///		Declare the enum within the state machine
 	/// </summary>
-	public Dictionary<Enum, State> states;
+	protected Dictionary<int, State> states;
 
-	public List<FSMTransition> validTransitions;
+	[SerializeField, HideInInspector]
+	protected List<FSMTransition> validTransitions = new List<FSMTransition>();
 
 	/// <summary>
 	/// This represents what state the machine is currently in
@@ -33,8 +82,6 @@ public abstract class MonoFSM : MonoBehaviour {
 	protected virtual void Start()
 	{
 		SetStates();
-
-		SetTransitions();
 
 		Initialize();
 
@@ -51,17 +98,23 @@ public abstract class MonoFSM : MonoBehaviour {
 	/// Initialize the dictionary of Enum to States in this function.
 	/// This gets called first before the initilazation of the machine itself
 	/// </summary>
-	protected abstract void SetStates();
+	private void SetStates()
+	{
+		states = new Dictionary<int,State>();
+		for (int i = 0; i < StateKeys.Count; i++)
+		{
+			if (stateValues[i] == null)
+			{
+				stateValues.RemoveAt( i );
+				i--;
+			}
+			states.Add(StateKeys[i], StateValues[i]);
+		}
+	}
 
 	/// <summary>
-	/// Use this function to initilize the dictionary of State to State
-	/// that provides a list of valid functions
-	/// </summary>
-	protected abstract void SetTransitions();
-
-	/// <summary>
-	/// This is used for anything that would need to get done at the start of 
-	/// this machine
+	/// This is used for anything that would need to get done at the start of the 
+	/// state machine, after the initialization of the machine
 	/// </summary>
 	protected virtual void Initialize() { }
 
@@ -96,8 +149,10 @@ public abstract class MonoFSM : MonoBehaviour {
 	/// <param name="toState"></param>
 	protected void Transition(Enum toState)
 	{
+		int toStateInt = Convert.ToInt32( toState );
+
 		currentState.OnExit();
-		if ( states.TryGetValue( toState, out currentState ) )
+		if ( states.TryGetValue( toStateInt, out currentState ) )
 		{
 			currentState.OnEnter();
 		}
@@ -111,7 +166,7 @@ public abstract class MonoFSM : MonoBehaviour {
 	/// <param name="from"></param>
 	/// <param name="to"></param>
 	/// <returns></returns>
-	public bool ContainsTransition(State from, State to)
+	public bool ContainsTransition(int from, int to)
 	{
 		return validTransitions.Contains(new FSMTransition(from, to));
 	}
@@ -122,7 +177,10 @@ public abstract class MonoFSM : MonoBehaviour {
 	/// </summary>
 	public virtual void AttemptTransition(Enum to)
 	{
-		if ( states.ContainsKey( to ) && ContainsTransition( currentState, states[to] ) )
+		int fromStateInt = Convert.ToInt32( states.First(m => m.Value == currentState).Key );
+		int toStateInt = Convert.ToInt32( to );
+
+		if ( states.ContainsKey( toStateInt ) && ContainsTransition( fromStateInt, toStateInt ) )
 			Transition( to );
 		else
 			Debug.Log( "FSM does not cannot transition to state " + to.ToString() + " from current state: " + currentState.Identifier );
@@ -133,12 +191,30 @@ public abstract class MonoFSM : MonoBehaviour {
 /// <summary>
 /// Provides a way to keep track of valid transtions int he FSM
 /// </summary>
+[Serializable]
 public class FSMTransition : IEquatable<FSMTransition>
 {
-	public State From { get; private set; }
-	public State To { get; private set; }
+	public int From 
+	{
+		get { return from; }
+#if UNITY_EDITOR
+		set { from = value; }
+#endif
+	}
+	[SerializeField]
+	private int from;
 
-	public FSMTransition(State from, State to)
+	public int To 
+	{
+		get { return to; } 
+#if UNITY_EDITOR
+		set { to = value; }
+#endif
+	}
+	[SerializeField]
+	private int to;
+
+	public FSMTransition(int from, int to)
 	{
 		this.From = from;
 		this.To = to;
