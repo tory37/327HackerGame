@@ -82,13 +82,23 @@ public class GameManager : MonoBehaviour
         z = zMax;
     }
 
+    /// <summary>
+    /// Returns the cell whose x and z values are the passed values
+    /// </summary>
+    /// <param name="x"></param>
+    /// <param name="z"></param>
+    /// <returns>A cell in the maze, or a cell with ID == -1 otherwise</returns>
     public Cell getCell(int x, int z)
     {
-        return instance.mazeRef[x, z];
+        if(x < 0 || z < 0 || x >= xMax || z >= zMax)
+            return instance.mazeRef[x, z];
+
+        return new Cell(-1, -1, -1);
     }
 
     /// <summary>
-    /// Returns the cell that the player is currently in
+    /// Returns the cell that the given position is in, or a cell with ID == -1
+    /// if the position is not in the maze.
     /// </summary>
     /// <returns>a Cell in the maze</returns>
     public Cell GetCellPositionIsIn(Vector3 position)
