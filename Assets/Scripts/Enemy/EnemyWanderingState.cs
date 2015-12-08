@@ -26,7 +26,7 @@ public class EnemyWanderingState : State
     public override void Initialize(MonoFSM callingfsm)
     {
         enemyfsm = (EnemyFSM)callingfsm;
-
+        /*
         //Set the initial location (random)
         setInitialLocation();
 
@@ -34,7 +34,7 @@ public class EnemyWanderingState : State
         currentState = state.wandering;
 
         // Set the initial Direction of the enemy.
-        setInitialDirection();
+        setInitialDirection();*/
     }
 
     // Update is called once per frame
@@ -46,14 +46,14 @@ public class EnemyWanderingState : State
 
 
         // Move enemy towards the goal
-        movement = (goal - transform.position).normalized;
+        movement = (enemyfsm.Goal - transform.position).normalized;
 
         transform.position += movement * Time.deltaTime * enemyfsm.enemySpeed;
-        if ((transform.position - goal).magnitude < .1)
+        if ((transform.position - enemyfsm.Goal).magnitude < .1)
         {
 
-            transform.position = goal;
-            currentCell = goalCell;
+            transform.position = enemyfsm.Goal;
+            enemyfsm.CurrentCell = enemyfsm.GoalCell;
             // After enemy moves, check to see if it needs to change direction
             if (needToChangeDirection())
             {
@@ -77,9 +77,8 @@ public class EnemyWanderingState : State
 
     public override void CheckTransitions()
     {
-        bool condition = false;
-
-        if (condition)
+        Collider[] col = Physics.OverlapSphere(transform.position, 5, 1024);
+        if (col.Length > 0)
         {
             enemyfsm.AttemptTransition(EnemyStates.Chasing);
         }
@@ -90,55 +89,55 @@ public class EnemyWanderingState : State
     /// </summary>
     private void updateGoalCell()
     {
-        int x = currentCell.x;
-        int z = currentCell.z;
-        switch (currentDirection)
+        int x = enemyfsm.CurrentCell.x;
+        int z = enemyfsm.CurrentCell.z;
+        switch (enemyfsm.CurrentDirection)
         {
             case direction.left:
-                goalCell = GameManager.Instance.getCell(x - 1, z);
+                enemyfsm.GoalCell = GameManager.Instance.getCell(x - 1, z);
                 break;
             case direction.down:
-                goalCell = GameManager.Instance.getCell(x, z + 1);
+                enemyfsm.GoalCell = GameManager.Instance.getCell(x, z + 1);
                 break;
             case direction.right:
-                goalCell = GameManager.Instance.getCell(x + 1, z);
+                enemyfsm.GoalCell = GameManager.Instance.getCell(x + 1, z);
                 break;
             case direction.up:
-                goalCell = GameManager.Instance.getCell(x, z - 1);
+                enemyfsm.GoalCell = GameManager.Instance.getCell(x, z - 1);
                 break;
 
 
         }
 
-        goal = new Vector3(goalCell.cellCenter.x, 1f, goalCell.cellCenter.z);
+        enemyfsm.Goal = new Vector3(enemyfsm.GoalCell.cellCenter.x, 1f, enemyfsm.GoalCell.cellCenter.z);
     }
     /// <summary>
     /// determines if the enemy HAS to change direction. (ran into a wall)
     /// </summary>
     private bool needToChangeDirection()
     {
-        if (currentDirection == direction.down)
+        if (enemyfsm.CurrentDirection == direction.down)
         {
-            if (currentCell.downBlocked)
+            if (enemyfsm.CurrentCell.downBlocked)
                 return true;
         }
-        if (currentDirection == direction.right)
+        if (enemyfsm.CurrentDirection == direction.right)
         {
-            if (currentCell.rightBlocked)
+            if (enemyfsm.CurrentCell.rightBlocked)
                 return true;
         }
-        if (currentDirection == direction.up)
+        if (enemyfsm.CurrentDirection == direction.up)
         {
-            if (currentCell.z == 0)
+            if (enemyfsm.CurrentCell.z == 0)
                 return true;
-            if (GameManager.Instance.getCell(currentCell.x, currentCell.z - 1).downBlocked)
+            if (GameManager.Instance.getCell(enemyfsm.CurrentCell.x, enemyfsm.CurrentCell.z - 1).downBlocked)
                 return true;
         }
-        if (currentDirection == direction.left)
+        if (enemyfsm.CurrentDirection == direction.left)
         {
-            if (currentCell.x == 0)
+            if (enemyfsm.CurrentCell.x == 0)
                 return true;
-            if (GameManager.Instance.getCell(currentCell.x - 1, currentCell.z).rightBlocked)
+            if (GameManager.Instance.getCell(enemyfsm.CurrentCell.x - 1, enemyfsm.CurrentCell.z).rightBlocked)
                 return true;
         }
         return false;
@@ -151,10 +150,10 @@ public class EnemyWanderingState : State
     {
         while (true)
         {
-            int x = currentCell.x;
-            int z = currentCell.z;
+            int x = enemyfsm.CurrentCell.x;
+            int z = enemyfsm.CurrentCell.z;
             int num = Random.Range(0, 2);
-            switch (currentDirection)
+            switch (enemyfsm.CurrentDirection)
             {
                 case direction.down:
                     //try to go left first
@@ -164,14 +163,14 @@ public class EnemyWanderingState : State
                         {
                             if (!GameManager.Instance.getCell(x - 1, z).rightBlocked)
                             {
-                                currentDirection = direction.left;
+                                enemyfsm.CurrentDirection = direction.left;
                                 return;
                             }
                         }
                         //try to go right
-                        if (!currentCell.rightBlocked)
+                        if (!enemyfsm.CurrentCell.rightBlocked)
                         {
-                            currentDirection = direction.right;
+                            enemyfsm.CurrentDirection = direction.right;
                             return;
                         }
 
@@ -179,9 +178,9 @@ public class EnemyWanderingState : State
                     //try to go right first
                     else
                     {
-                        if (!currentCell.rightBlocked)
+                        if (!enemyfsm.CurrentCell.rightBlocked)
                         {
-                            currentDirection = direction.right;
+                            enemyfsm.CurrentDirection = direction.right;
                             return;
                         }
                         //try to go left
@@ -189,7 +188,7 @@ public class EnemyWanderingState : State
                         {
                             if (!GameManager.Instance.getCell(x - 1, z).rightBlocked)
                             {
-                                currentDirection = direction.left;
+                                enemyfsm.CurrentDirection = direction.left;
                                 return;
                             }
                         }
@@ -197,7 +196,7 @@ public class EnemyWanderingState : State
                     }
 
                     //go up
-                    currentDirection = direction.up;
+                    enemyfsm.CurrentDirection = direction.up;
                     return;
 
 
@@ -209,14 +208,14 @@ public class EnemyWanderingState : State
                         {
                             if (!GameManager.Instance.getCell(x, z - 1).downBlocked)
                             {
-                                currentDirection = direction.up;
+                                enemyfsm.CurrentDirection = direction.up;
                                 return;
                             }
                         }
                         //try to go down
-                        if (!currentCell.downBlocked)
+                        if (!enemyfsm.CurrentCell.downBlocked)
                         {
-                            currentDirection = direction.down;
+                            enemyfsm.CurrentDirection = direction.down;
                             return;
                         }
 
@@ -224,9 +223,9 @@ public class EnemyWanderingState : State
                     //try to go down first
                     else
                     {
-                        if (!currentCell.downBlocked)
+                        if (!enemyfsm.CurrentCell.downBlocked)
                         {
-                            currentDirection = direction.down;
+                            enemyfsm.CurrentDirection = direction.down;
                             return;
                         }
 
@@ -235,7 +234,7 @@ public class EnemyWanderingState : State
                         {
                             if (!GameManager.Instance.getCell(x, z - 1).downBlocked)
                             {
-                                currentDirection = direction.up;
+                                enemyfsm.CurrentDirection = direction.up;
                                 return;
                             }
                         }
@@ -243,7 +242,7 @@ public class EnemyWanderingState : State
                     }
 
                     //go right
-                    currentDirection = direction.right;
+                    enemyfsm.CurrentDirection = direction.right;
                     return;
 
 
@@ -255,24 +254,24 @@ public class EnemyWanderingState : State
                         {
                             if (!GameManager.Instance.getCell(x, z - 1).downBlocked)
                             {
-                                currentDirection = direction.up;
+                                enemyfsm.CurrentDirection = direction.up;
                                 return;
                             }
                         }
 
                         //try to go down
-                        if (!currentCell.downBlocked)
+                        if (!enemyfsm.CurrentCell.downBlocked)
                         {
-                            currentDirection = direction.down;
+                            enemyfsm.CurrentDirection = direction.down;
                             return;
                         }
                     }
                     //try to go down first
                     else
                     {
-                        if (!currentCell.downBlocked)
+                        if (!enemyfsm.CurrentCell.downBlocked)
                         {
-                            currentDirection = direction.down;
+                            enemyfsm.CurrentDirection = direction.down;
                             return;
                         }
 
@@ -281,13 +280,13 @@ public class EnemyWanderingState : State
                         {
                             if (!GameManager.Instance.getCell(x, z - 1).downBlocked)
                             {
-                                currentDirection = direction.up;
+                                enemyfsm.CurrentDirection = direction.up;
                                 return;
                             }
                         }
                     }
                     //go left
-                    currentDirection = direction.left;
+                    enemyfsm.CurrentDirection = direction.left;
                     return;
 
 
@@ -299,24 +298,24 @@ public class EnemyWanderingState : State
                         {
                             if (!GameManager.Instance.getCell(x - 1, z).rightBlocked)
                             {
-                                currentDirection = direction.left;
+                                enemyfsm.CurrentDirection = direction.left;
                                 return;
                             }
                         }
 
                         //try to go right
-                        if (!currentCell.rightBlocked)
+                        if (!enemyfsm.CurrentCell.rightBlocked)
                         {
-                            currentDirection = direction.right;
+                            enemyfsm.CurrentDirection = direction.right;
                             return;
                         }
                     }
                     //try to go right first
                     else
                     {
-                        if (!currentCell.rightBlocked)
+                        if (!enemyfsm.CurrentCell.rightBlocked)
                         {
-                            currentDirection = direction.right;
+                            enemyfsm.CurrentDirection = direction.right;
                             return;
                         }
 
@@ -325,14 +324,14 @@ public class EnemyWanderingState : State
                         {
                             if (!GameManager.Instance.getCell(x - 1, z).rightBlocked)
                             {
-                                currentDirection = direction.left;
+                                enemyfsm.CurrentDirection = direction.left;
                                 return;
                             }
                         }
                     }
 
                     //go down
-                    currentDirection = direction.down;
+                    enemyfsm.CurrentDirection = direction.down;
                     return;
 
 
@@ -391,18 +390,18 @@ public class EnemyWanderingState : State
 
         int random1 = Random.Range(0, 2);
         int random2 = Random.Range(0, 2);
-        int x = currentCell.x;
-        int z = currentCell.z;
+        int x = enemyfsm.CurrentCell.x;
+        int z = enemyfsm.CurrentCell.z;
         //if the enemy hasn't turned in 3 times, TURN.
         if (countSinceTurn == 3)
         {
-            switch (currentDirection)
+            switch (enemyfsm.CurrentDirection)
             {
                 case direction.down:
                     //try to turn right
-                    if (!currentCell.rightBlocked)
+                    if (!enemyfsm.CurrentCell.rightBlocked)
                     {
-                        currentDirection = direction.right;
+                        enemyfsm.CurrentDirection = direction.right;
                         countSinceTurn = 0;
                         return;
                     }
@@ -411,7 +410,7 @@ public class EnemyWanderingState : State
                     {
                         if (!GameManager.Instance.getCell(x - 1, z).rightBlocked)
                         {
-                            currentDirection = direction.left;
+                            enemyfsm.CurrentDirection = direction.left;
                             countSinceTurn = 0;
                             return;
                         }
@@ -420,9 +419,9 @@ public class EnemyWanderingState : State
                     break;
                 case direction.up:
                     //try to turn right
-                    if (!currentCell.rightBlocked)
+                    if (!enemyfsm.CurrentCell.rightBlocked)
                     {
-                        currentDirection = direction.right;
+                        enemyfsm.CurrentDirection = direction.right;
                         countSinceTurn = 0;
                         return;
                     }
@@ -431,7 +430,7 @@ public class EnemyWanderingState : State
                     {
                         if (!GameManager.Instance.getCell(x - 1, z).rightBlocked)
                         {
-                            currentDirection = direction.left;
+                            enemyfsm.CurrentDirection = direction.left;
                             countSinceTurn = 0;
                             return;
                         }
@@ -444,15 +443,15 @@ public class EnemyWanderingState : State
                     {
                         if (!GameManager.Instance.getCell(x, z - 1).downBlocked)
                         {
-                            currentDirection = direction.up;
+                            enemyfsm.CurrentDirection = direction.up;
                             countSinceTurn = 0;
                             return;
                         }
                     }
                     //try to turn down
-                    if (!currentCell.downBlocked)
+                    if (!enemyfsm.CurrentCell.downBlocked)
                     {
-                        currentDirection = direction.down;
+                        enemyfsm.CurrentDirection = direction.down;
                         countSinceTurn = 0;
                         return;
                     }
@@ -464,15 +463,15 @@ public class EnemyWanderingState : State
                     {
                         if (!GameManager.Instance.getCell(x, z - 1).downBlocked)
                         {
-                            currentDirection = direction.up;
+                            enemyfsm.CurrentDirection = direction.up;
                             countSinceTurn = 0;
                             return;
                         }
                     }
                     //try to turn down
-                    if (!currentCell.downBlocked)
+                    if (!enemyfsm.CurrentCell.downBlocked)
                     {
-                        currentDirection = direction.down;
+                        enemyfsm.CurrentDirection = direction.down;
                         countSinceTurn = 0;
                         return;
                     }
@@ -481,17 +480,17 @@ public class EnemyWanderingState : State
 
             }
         }
-        switch (currentDirection)
+        switch (enemyfsm.CurrentDirection)
         {
             case direction.down:
                 //check to see if the right cell is open first
                 if (random1 == 0)
                 {
-                    if (!currentCell.rightBlocked)
+                    if (!enemyfsm.CurrentCell.rightBlocked)
                     {
                         if (random2 == 1)
                         {
-                            currentDirection = direction.right;
+                            enemyfsm.CurrentDirection = direction.right;
                             countSinceTurn = 0;
                             return;
                         }
@@ -503,7 +502,7 @@ public class EnemyWanderingState : State
                         {
                             if (random2 == 1)
                             {
-                                currentDirection = direction.left;
+                                enemyfsm.CurrentDirection = direction.left;
                                 countSinceTurn = 0;
                                 return;
                             }
@@ -519,18 +518,18 @@ public class EnemyWanderingState : State
                         {
                             if (random2 == 1)
                             {
-                                currentDirection = direction.left;
+                                enemyfsm.CurrentDirection = direction.left;
                                 countSinceTurn = 0;
                                 return;
                             }
                         }
                     }
                     //check to see if the right cell is open
-                    if (!currentCell.rightBlocked)
+                    if (!enemyfsm.CurrentCell.rightBlocked)
                     {
                         if (random2 == 1)
                         {
-                            currentDirection = direction.right;
+                            enemyfsm.CurrentDirection = direction.right;
                             countSinceTurn = 0;
                             return;
                         }
@@ -542,11 +541,11 @@ public class EnemyWanderingState : State
                 //check to see if the right cell is open first
                 if (random1 == 0)
                 {
-                    if (!currentCell.rightBlocked)
+                    if (!enemyfsm.CurrentCell.rightBlocked)
                     {
                         if (random2 == 1)
                         {
-                            currentDirection = direction.right;
+                            enemyfsm.CurrentDirection = direction.right;
                             countSinceTurn = 0;
                             return;
                         }
@@ -558,7 +557,7 @@ public class EnemyWanderingState : State
                         {
                             if (random2 == 1)
                             {
-                                currentDirection = direction.left;
+                                enemyfsm.CurrentDirection = direction.left;
                                 countSinceTurn = 0;
                                 return;
                             }
@@ -574,18 +573,18 @@ public class EnemyWanderingState : State
                         {
                             if (random2 == 1)
                             {
-                                currentDirection = direction.left;
+                                enemyfsm.CurrentDirection = direction.left;
                                 countSinceTurn = 0;
                                 return;
                             }
                         }
                     }
                     //check to see if the right cell is open
-                    if (!currentCell.rightBlocked)
+                    if (!enemyfsm.CurrentCell.rightBlocked)
                     {
                         if (random2 == 1)
                         {
-                            currentDirection = direction.right;
+                            enemyfsm.CurrentDirection = direction.right;
                             countSinceTurn = 0;
                             return;
                         }
@@ -604,7 +603,7 @@ public class EnemyWanderingState : State
 
                             if (random2 == 1)
                             {
-                                currentDirection = direction.up;
+                                enemyfsm.CurrentDirection = direction.up;
                                 countSinceTurn = 0;
                                 return;
                             }
@@ -612,11 +611,11 @@ public class EnemyWanderingState : State
                     }
 
                     //check to see if the down cell is open
-                    if (!currentCell.downBlocked)
+                    if (!enemyfsm.CurrentCell.downBlocked)
                     {
                         if (random2 == 1)
                         {
-                            currentDirection = direction.down;
+                            enemyfsm.CurrentDirection = direction.down;
                             countSinceTurn = 0;
                             return;
                         }
@@ -625,11 +624,11 @@ public class EnemyWanderingState : State
                 //Check to see if the down cell is open first
                 else
                 {
-                    if (!currentCell.downBlocked)
+                    if (!enemyfsm.CurrentCell.downBlocked)
                     {
                         if (random2 == 1)
                         {
-                            currentDirection = direction.down;
+                            enemyfsm.CurrentDirection = direction.down;
                             countSinceTurn = 0;
                             return;
                         }
@@ -643,7 +642,7 @@ public class EnemyWanderingState : State
 
                             if (random2 == 1)
                             {
-                                currentDirection = direction.up;
+                                enemyfsm.CurrentDirection = direction.up;
                                 countSinceTurn = 0;
                                 return;
                             }
@@ -664,7 +663,7 @@ public class EnemyWanderingState : State
 
                             if (random2 == 1)
                             {
-                                currentDirection = direction.up;
+                                enemyfsm.CurrentDirection = direction.up;
                                 countSinceTurn = 0;
                                 return;
                             }
@@ -672,11 +671,11 @@ public class EnemyWanderingState : State
                     }
 
                     //check to see if the down cell is open
-                    if (!currentCell.downBlocked)
+                    if (!enemyfsm.CurrentCell.downBlocked)
                     {
                         if (random2 == 1)
                         {
-                            currentDirection = direction.down;
+                            enemyfsm.CurrentDirection = direction.down;
                             countSinceTurn = 0;
                             return;
                         }
@@ -685,11 +684,11 @@ public class EnemyWanderingState : State
                 //Check to see if the down cell is open first
                 else
                 {
-                    if (!currentCell.downBlocked)
+                    if (!enemyfsm.CurrentCell.downBlocked)
                     {
                         if (random2 == 1)
                         {
-                            currentDirection = direction.down;
+                            enemyfsm.CurrentDirection = direction.down;
                             countSinceTurn = 0;
                             return;
                         }
@@ -703,7 +702,7 @@ public class EnemyWanderingState : State
 
                             if (random2 == 1)
                             {
-                                currentDirection = direction.up;
+                                enemyfsm.CurrentDirection = direction.up;
                                 countSinceTurn = 0;
                                 return;
                             }

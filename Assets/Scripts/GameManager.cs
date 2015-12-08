@@ -2,7 +2,7 @@
 using System.Collections;
 using System;
 
-enum direction { up, down, left, right };
+public enum direction { up, down, left, right };
 
 public class GameManager : MonoBehaviour 
 {
