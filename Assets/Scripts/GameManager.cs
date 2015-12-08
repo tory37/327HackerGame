@@ -66,7 +66,7 @@ public class GameManager : MonoBehaviour
 	// Update is called once per frame
 	void Update () 
     {
-	
+	    //Debug.Log("Player in Cell: " + this.GetCellPlayerIsIn().x + ", " +this.GetCellPlayerIsIn().z);
 	}
     // A way for every object in the scene to access the maze if need be in the future.
     public void getMaze(out Cell[,] theMaze, out int x, out int z)
@@ -85,6 +85,25 @@ public class GameManager : MonoBehaviour
     public Cell getCell(int x, int z)
     {
         return instance.mazeRef[x, z];
+    }
+
+    /// <summary>
+    /// Returns the cell that the player is currently in
+    /// </summary>
+    /// <returns>a Cell in the maze</returns>
+    public Cell GetCellPlayerIsIn()
+    {
+        float playerX, playerZ;
+        int cellX, cellZ;
+
+        playerX = PlayerRef.transform.position.x + 2.5f;
+        playerZ = PlayerRef.transform.position.z + 2.5f;
+
+        cellX = (int) playerX / 10;
+        cellZ = (int) playerZ / 10;
+
+        return this.getCell(cellX, cellZ);
+
     }
     
 
