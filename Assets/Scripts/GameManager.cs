@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System;
 
 enum direction { up, down, left, right };
 
@@ -55,7 +56,7 @@ public class GameManager : MonoBehaviour
             mazeGeneratorRef.getMaze(ref mazeRef, ref xMax, ref zMax);
             
         }
-        numEnemies = (xMax + zMax) / 10;
+        numEnemies = Convert.ToInt32((xMax * zMax) / 50 * 1.5);
         for(int i = 0; i < numEnemies; i++)
         {
             Instantiate(enemyPrefab);
