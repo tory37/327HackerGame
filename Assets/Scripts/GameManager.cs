@@ -2,7 +2,7 @@
 using System.Collections;
 using System;
 
-enum direction { up, down, left, right };
+public enum direction { up, down, left, right };
 
 public class GameManager : MonoBehaviour 
 {
@@ -117,7 +117,6 @@ public class GameManager : MonoBehaviour
         return this.getCell(cellX, cellZ);
 
     }
-    
 	void CheckForPause()
 	{
 		if (Input.GetButtonDown("Pause"))
@@ -128,4 +127,8 @@ public class GameManager : MonoBehaviour
 			//Time.timeScale = 0;
 		}
 	}
+    public Vector3 GetPlayerPosition()
+    {
+        return PlayerRef.transform.position;
+    }
 }

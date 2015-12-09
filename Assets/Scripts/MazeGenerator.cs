@@ -494,5 +494,7 @@ public class MazeGenerator : MonoBehaviour {
     {
         //not necessary, methinks
     }
+
+    
 	
 }
