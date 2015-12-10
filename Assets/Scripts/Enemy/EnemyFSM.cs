@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public enum EnemyStates
 {
@@ -15,6 +16,11 @@ public class EnemyFSM : MonoFSM {
     public Vector3 Goal { get; set; }
     public int XSize { get; set; }
     public int ZSize { get; set; }
+
+    
+    public Color wanderingColor, chasingColor;
+
+    public ParticleSystem enemyMat;
 
     public direction CurrentDirection { get; set; }
 
