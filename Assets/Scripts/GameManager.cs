@@ -31,6 +31,8 @@ public class GameManager : MonoBehaviour
     private Cell[,] mazeRef;
     private int xMax, zMax;
 
+    private int goalX, goalZ;
+
     private static GameManager instance;
 
     private bool playerHasToken;
@@ -86,8 +88,7 @@ public class GameManager : MonoBehaviour
             Instantiate(enemyPrefab);
         }
         //place the goal token
-        int goalZ;
-        int goalX = UnityEngine.Random.Range(0, xMax);
+        goalX = UnityEngine.Random.Range(0, xMax);
         if(goalX > xMax / 2)
         {
             goalZ = UnityEngine.Random.Range(0, zMax);
@@ -179,6 +180,11 @@ public class GameManager : MonoBehaviour
     public Vector3 GetPlayerPosition()
     {
         return PlayerRef.transform.position;
+    }
+
+    public Cell GetCellGoalIsIn()
+    {
+        return getCell(goalX, goalZ);
     }
 
     public void NotifyPlayerHasToken()

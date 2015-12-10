@@ -13,6 +13,9 @@ public class PlayerTeleport : MonoBehaviour {
     private float cooldownTime;
     private bool canTeleport;
 
+    //these are variables for the cheatcode "win"
+    private bool w_entered, i_entered, n_entered, enteredOnce;
+
 
 	// Use this for initialization
 	void Start () {
@@ -50,6 +53,9 @@ public class PlayerTeleport : MonoBehaviour {
                 sound.Play();
             }
         }
+
+        //Cheat code to teleport player to the goal
+        win_cheat_handler();
 	
 	}
     Cell GetTeleport()
@@ -95,6 +101,52 @@ public class PlayerTeleport : MonoBehaviour {
 
         canTeleport = true;
                 
+    }
+
+    void win_cheat_handler()
+    {
+        //W has been entered
+        if(!w_entered && !i_entered && !n_entered)
+        {
+            if (Input.GetKeyDown(KeyCode.W))
+                w_entered = true;
+        }
+            //I has been entered
+        else if(w_entered && !i_entered && !n_entered)
+        {
+            if (Input.GetKeyDown(KeyCode.I))
+                i_entered = true;
+            else if (Input.anyKeyDown)
+                w_entered = false;
+        }
+        else if(w_entered && i_entered && !n_entered)
+        {
+            if (Input.GetKeyDown(KeyCode.N))
+                n_entered = true;
+            else if (Input.anyKeyDown)
+            {
+                w_entered = false;
+                i_entered = false;
+            }
+        }
+        //at this point, we know the regular expression has been met
+        if(n_entered)
+        {
+            if(!enteredOnce)
+            { //if first time, warp to the goal
+                transform.position = theManager.GetCellGoalIsIn().cellCenter;
+                enteredOnce = true;
+            }
+            else //otherwise, warp to the origin cell
+            {
+                transform.position = theManager.getCell(0, 0).cellCenter;
+            }
+            w_entered = false;
+            i_entered = false;
+            n_entered = false;
+
+        }
+
     }
 
 
