@@ -54,14 +54,15 @@ public class GameManager : MonoBehaviour
         }
     }
 
-
-
     void Awake()
     {
+		Cursor.lockState = CursorLockMode.Locked;
+		Cursor.visible = false;
+
         instance = this;
         playerHasToken = false;
 
-		UIManager.Instance.Show( "InGameGUI" );
+		UIManager.Instance.Show( "InGameGui" );
         
     }
 
