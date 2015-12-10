@@ -4,12 +4,25 @@ using System;
 
 public enum direction { up, down, left, right };
 
-public class GameManager : MonoBehaviour 
+public class GameManager : MonoBehaviour
 {
-    [SerializeField]
+	#region Editor Interface
+
+	[SerializeField]
     private GameObject PlayerRef, mazeGenerator, enemyPrefab, goalToken;
 
-    private MazeGenerator mazeGeneratorRef;
+	public int NextLevel
+	{
+		get
+		{
+			return nextLevelIndex;
+		}
+	}
+	[SerializeField] private int nextLevelIndex;
+
+	#endregion
+
+	private MazeGenerator mazeGeneratorRef;
     
     private int numEnemies;
 
@@ -18,9 +31,14 @@ public class GameManager : MonoBehaviour
     private Cell[,] mazeRef;
     private int xMax, zMax;
 
+    private int goalX, goalZ;
+
     private static GameManager instance;
 
     private bool playerHasToken;
+
+    private bool playerHidden;
+    public bool PlayerHidden { get{return playerHidden;} set{playerHidden = value;} }
 
     public static GameManager Instance
     {
@@ -41,13 +59,17 @@ public class GameManager : MonoBehaviour
         }
     }
 
-
-
     void Awake()
     {
+		Cursor.lockState = CursorLockMode.Locked;
+		Cursor.visible = false;
+
         instance = this;
         playerHasToken = false;
-        
+
+		playerHidden = false;
+
+		UIManager.Instance.Show( "InGameGui" );
     }
 
 	// Use this for initialization
@@ -67,8 +89,7 @@ public class GameManager : MonoBehaviour
             Instantiate(enemyPrefab);
         }
         //place the goal token
-        int goalZ;
-        int goalX = UnityEngine.Random.Range(0, xMax);
+        goalX = UnityEngine.Random.Range(0, xMax);
         if(goalX > xMax / 2)
         {
             goalZ = UnityEngine.Random.Range(0, zMax);
@@ -80,6 +101,8 @@ public class GameManager : MonoBehaviour
 
         GameObject goal = Instantiate(goalToken);
         goal.transform.position = getCell(goalX, goalZ).cellCenter;
+
+        //place the poewerUps
 
 	}
 	
@@ -143,6 +166,7 @@ public class GameManager : MonoBehaviour
         return this.getCell(cellX, cellZ);
 
     }
+
 	void CheckForPause()
 	{
 		if (Input.GetButtonDown("Pause"))
@@ -153,13 +177,25 @@ public class GameManager : MonoBehaviour
 			//Time.timeScale = 0;
 		}
 	}
+
     public Vector3 GetPlayerPosition()
     {
         return PlayerRef.transform.position;
     }
 
+    public Cell GetCellGoalIsIn()
+    {
+        return getCell(goalX, goalZ);
+    }
+
     public void NotifyPlayerHasToken()
     {
         this.playerHasToken = true;
+    }
+
+    //need to get a list of the enemies and set their speed to 0 for a few seconds
+    public void StunAllEnemies()
+    {
+        
     }
 }

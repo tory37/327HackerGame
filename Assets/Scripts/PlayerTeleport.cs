@@ -10,10 +10,19 @@ public class PlayerTeleport : MonoBehaviour {
     private AudioClip [] teleportSounds;
     private AudioSource sound;
 
+    private float cooldownTime;
+    private bool canTeleport;
+
+    //these are variables for the cheatcode "win"
+    private bool w_entered, i_entered, n_entered, enteredOnce;
+
+
 	// Use this for initialization
 	void Start () {
         theManager = GameManager.Instance;
         sound = gameObject.GetComponent<AudioSource>();
+        cooldownTime = 5.0f;
+        canTeleport = true;
 	}
 	
 	// Update is called once per frame
@@ -27,13 +36,15 @@ public class PlayerTeleport : MonoBehaviour {
                 sound.Stop();
             }
             Cell toTeleport = GetTeleport();
-            if(toTeleport.ID != -1)
+            if(canTeleport && toTeleport.ID != -1  )
             {
                 //The teleport has succeeded, move to next cell
                 transform.position = toTeleport.cellCenter + new Vector3(0,.5f,0);
                 //play the success sound
+
                 sound.clip = teleportSounds[1];
                 sound.Play();
+                StartCoroutine(countdowntimer());
             }
             else
             {
@@ -42,20 +53,18 @@ public class PlayerTeleport : MonoBehaviour {
                 sound.Play();
             }
         }
+
+        //Cheat code to teleport player to the goal
+        win_cheat_handler();
 	
 	}
     Cell GetTeleport()
     {
-        Debug.Log("Attempting Teleport!");
         Vector3 lookingFlat = new Vector3(PlayerCam.transform.forward.x, 0, PlayerCam.transform.forward.z);
         Ray checkWall = new Ray(transform.position, PlayerCam.transform.forward);
         RaycastHit wallMaybe;
-        Debug.Log("Attempting to look for a wall!");
         if(Physics.Raycast(checkWall, out wallMaybe, 7))
         {
-            Debug.Log("Something was hit");
-            Debug.Log("Hit object center at: " + wallMaybe.transform.position);
-            Debug.Log("Object was: " + wallMaybe.transform.name);
             if (wallMaybe.transform.tag == "wall")
             {
                 Vector3 teleportFromWallDistance = transform.position - wallMaybe.transform.position;
@@ -63,8 +72,6 @@ public class PlayerTeleport : MonoBehaviour {
                     - teleportFromWallDistance;
 
                 Cell toGoTo = theManager.GetCellPositionIsIn(teleportTarget);
-                Debug.Log("Jump from: " +
-                    theManager.GetCellPositionIsIn(transform.position) + " to " + toGoTo.ID);
                 return toGoTo;
             }
         }
@@ -77,6 +84,68 @@ public class PlayerTeleport : MonoBehaviour {
         //float dotProductOfLookingAndX = Vector3.Dot(looking, Vector3.right);
         //if(looking.z > 0 && dotProductOfLookingAndX < )
 
+
+    }
+
+    IEnumerator countdowntimer()
+    {
+        float counter = 0f;
+        canTeleport = false;
+
+        while(counter < cooldownTime)
+        {
+            //Tory do your stuff here
+            yield return new WaitForSeconds(.05f);
+            counter += .05f;
+        }
+
+        canTeleport = true;
+                
+    }
+
+    void win_cheat_handler()
+    {
+        //W has been entered
+        if(!w_entered && !i_entered && !n_entered)
+        {
+            if (Input.GetKeyDown(KeyCode.W))
+                w_entered = true;
+        }
+            //I has been entered
+        else if(w_entered && !i_entered && !n_entered)
+        {
+            if (Input.GetKeyDown(KeyCode.I))
+                i_entered = true;
+            else if (Input.anyKeyDown)
+                w_entered = false;
+        }
+        else if(w_entered && i_entered && !n_entered)
+        {
+            if (Input.GetKeyDown(KeyCode.N))
+                n_entered = true;
+            else if (Input.anyKeyDown)
+            {
+                w_entered = false;
+                i_entered = false;
+            }
+        }
+        //at this point, we know the regular expression has been met
+        if(n_entered)
+        {
+            if(!enteredOnce)
+            { //if first time, warp to the goal
+                transform.position = theManager.GetCellGoalIsIn().cellCenter;
+                enteredOnce = true;
+            }
+            else //otherwise, warp to the origin cell
+            {
+                transform.position = theManager.getCell(0, 0).cellCenter;
+            }
+            w_entered = false;
+            i_entered = false;
+            n_entered = false;
+
+        }
 
     }
 
