@@ -164,6 +164,7 @@ public class GameManager : MonoBehaviour
         return this.getCell(cellX, cellZ);
 
     }
+
 	void CheckForPause()
 	{
 		if (Input.GetButtonDown("Pause"))
@@ -174,6 +175,7 @@ public class GameManager : MonoBehaviour
 			//Time.timeScale = 0;
 		}
 	}
+
     public Vector3 GetPlayerPosition()
     {
         return PlayerRef.transform.position;
