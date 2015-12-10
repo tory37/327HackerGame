@@ -6,10 +6,14 @@ public class PlayerTeleport : MonoBehaviour {
     GameManager theManager;
     [SerializeField]
     private Camera PlayerCam;
+    [SerializeField]
+    private AudioClip [] teleportSounds;
+    private AudioSource sound;
 
 	// Use this for initialization
 	void Start () {
         theManager = GameManager.Instance;
+        sound = gameObject.GetComponent<AudioSource>();
 	}
 	
 	// Update is called once per frame
@@ -18,10 +22,24 @@ public class PlayerTeleport : MonoBehaviour {
         //Will check to see if the user has pressed E
         if(Input.GetMouseButtonDown(0))
         {
+            if(sound.isPlaying)
+            {
+                sound.Stop();
+            }
             Cell toTeleport = GetTeleport();
             if(toTeleport.ID != -1)
             {
+                //The teleport has succeeded, move to next cell
                 transform.position = toTeleport.cellCenter + new Vector3(0,.5f,0);
+                //play the success sound
+                sound.clip = teleportSounds[1];
+                sound.Play();
+            }
+            else
+            {
+                //failed, play the fail sound
+                sound.clip = teleportSounds[0];
+                sound.Play();
             }
         }
 	
