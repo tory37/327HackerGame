@@ -16,7 +16,7 @@ public class PlayerTeleport : MonoBehaviour {
 	void Update () 
     {
         //Will check to see if the user has pressed E
-        if(Input.GetKeyDown(KeyCode.E))
+        if(Input.GetMouseButtonDown(0))
         {
             Cell toTeleport = GetTeleport();
             if(toTeleport.ID != -1)

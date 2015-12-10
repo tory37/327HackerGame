@@ -7,7 +7,7 @@ public enum direction { up, down, left, right };
 public class GameManager : MonoBehaviour 
 {
     [SerializeField]
-    private GameObject PlayerRef, mazeGenerator, enemyPrefab;
+    private GameObject PlayerRef, mazeGenerator, enemyPrefab, goalToken;
 
     private MazeGenerator mazeGeneratorRef;
     
@@ -19,6 +19,8 @@ public class GameManager : MonoBehaviour
     private int xMax, zMax;
 
     private static GameManager instance;
+
+    private bool playerHasToken;
 
     public static GameManager Instance
     {
@@ -44,32 +46,56 @@ public class GameManager : MonoBehaviour
     void Awake()
     {
         instance = this;
+        playerHasToken = false;
         
     }
 
 	// Use this for initialization
 	void Start () 
     {
+        //Wait for the maze to generate
         mazeGeneratorRef = mazeGenerator.GetComponent<MazeGenerator>();
         while (mazeRef == null)
         {
             mazeGeneratorRef.getMaze(ref mazeRef, ref xMax, ref zMax);
             
         }
+        //start placing enemies
         numEnemies = Convert.ToInt32((xMax * zMax) / 50 * 1.5);
         for(int i = 0; i < numEnemies; i++)
         {
             Instantiate(enemyPrefab);
         }
+        //place the goal token
+        int goalZ;
+        int goalX = UnityEngine.Random.Range(0, xMax);
+        if(goalX > xMax / 2)
+        {
+            goalZ = UnityEngine.Random.Range(0, zMax);
+        }
+        else
+        {
+            goalZ = UnityEngine.Random.Range(zMax / 2, zMax);
+        }
+
+        GameObject goal = Instantiate(goalToken);
+        goal.transform.position = getCell(goalX, goalZ).cellCenter;
+
 	}
 	
 	// Update is called once per frame
 	void Update () 
-    	{
+    {
 		CheckForPause();
+        if(playerHasToken)
+        {
+            if (GetCellPositionIsIn(PlayerRef.transform.position).ID == 0)
+            {
+                //The Game has been won
+                Debug.Log("Woooo!");
+            }
 
-	    Debug.Log("Player in Cell: " + this.GetCellPositionIsIn(PlayerRef.transform.position).x 
-            + ", " +this.GetCellPositionIsIn(PlayerRef.transform.position).z);
+        }
 	}
 
     // A way for every object in the scene to access the maze if need be in the future.
@@ -130,5 +156,10 @@ public class GameManager : MonoBehaviour
     public Vector3 GetPlayerPosition()
     {
         return PlayerRef.transform.position;
+    }
+
+    public void NotifyPlayerHasToken()
+    {
+        this.playerHasToken = true;
     }
 }
