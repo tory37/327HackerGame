@@ -260,5 +260,14 @@ namespace UnityStandardAssets.Characters.FirstPerson
                 m_Jumping = false;
             }
         }
+
+        void OnCollisionEnter(Collision other)
+        {
+            if(other.gameObject.tag == "Enemy")
+            {
+                //GAME ENDS HERE
+                Debug.Log("GAME ENDS HERE");
+            }
+        }
     }
 }
