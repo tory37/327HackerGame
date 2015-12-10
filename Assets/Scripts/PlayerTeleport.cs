@@ -10,10 +10,16 @@ public class PlayerTeleport : MonoBehaviour {
     private AudioClip [] teleportSounds;
     private AudioSource sound;
 
+    private float cooldownTime;
+    private bool canTeleport;
+
+
 	// Use this for initialization
 	void Start () {
         theManager = GameManager.Instance;
         sound = gameObject.GetComponent<AudioSource>();
+        cooldownTime = 5.0f;
+        canTeleport = true;
 	}
 	
 	// Update is called once per frame
@@ -27,13 +33,15 @@ public class PlayerTeleport : MonoBehaviour {
                 sound.Stop();
             }
             Cell toTeleport = GetTeleport();
-            if(toTeleport.ID != -1)
+            if(canTeleport && toTeleport.ID != -1  )
             {
                 //The teleport has succeeded, move to next cell
                 transform.position = toTeleport.cellCenter + new Vector3(0,.5f,0);
                 //play the success sound
+
                 sound.clip = teleportSounds[1];
                 sound.Play();
+                StartCoroutine(countdowntimer());
             }
             else
             {
@@ -46,16 +54,11 @@ public class PlayerTeleport : MonoBehaviour {
 	}
     Cell GetTeleport()
     {
-        Debug.Log("Attempting Teleport!");
         Vector3 lookingFlat = new Vector3(PlayerCam.transform.forward.x, 0, PlayerCam.transform.forward.z);
         Ray checkWall = new Ray(transform.position, PlayerCam.transform.forward);
         RaycastHit wallMaybe;
-        Debug.Log("Attempting to look for a wall!");
         if(Physics.Raycast(checkWall, out wallMaybe, 7))
         {
-            Debug.Log("Something was hit");
-            Debug.Log("Hit object center at: " + wallMaybe.transform.position);
-            Debug.Log("Object was: " + wallMaybe.transform.name);
             if (wallMaybe.transform.tag == "wall")
             {
                 Vector3 teleportFromWallDistance = transform.position - wallMaybe.transform.position;
@@ -63,8 +66,6 @@ public class PlayerTeleport : MonoBehaviour {
                     - teleportFromWallDistance;
 
                 Cell toGoTo = theManager.GetCellPositionIsIn(teleportTarget);
-                Debug.Log("Jump from: " +
-                    theManager.GetCellPositionIsIn(transform.position) + " to " + toGoTo.ID);
                 return toGoTo;
             }
         }
@@ -78,6 +79,22 @@ public class PlayerTeleport : MonoBehaviour {
         //if(looking.z > 0 && dotProductOfLookingAndX < )
 
 
+    }
+
+    IEnumerator countdowntimer()
+    {
+        float counter = 0f;
+        canTeleport = false;
+
+        while(counter < cooldownTime)
+        {
+            //Tory do your stuff here
+            yield return new WaitForSeconds(.05f);
+            counter += .05f;
+        }
+
+        canTeleport = true;
+                
     }
 
 
