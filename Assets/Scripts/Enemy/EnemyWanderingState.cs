@@ -82,6 +82,7 @@ public class EnemyWanderingState : State
         {
             changeDirection();
         }
+        enemyfsm.enemyMat.startColor = enemyfsm.wanderingColor;
     }
     public override void CheckTransitions()
     {

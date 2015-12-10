@@ -21,6 +21,7 @@ public class EnemyChasingState : State
         GetComponent<Renderer>().material.color = Color.red;
         updateGoalCell();
         enemyfsm.enemySpeed = 11;
+        enemyfsm.enemyMat.startColor = enemyfsm.chasingColor;
         
     }
 
