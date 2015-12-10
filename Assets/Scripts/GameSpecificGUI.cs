@@ -11,4 +11,9 @@ public class GameSpecificGUI : MonoBehaviour {
 		inGameGuiUsername.text = text;
 	}
 	
+	public void CyclePUP()
+	{
+
+	}
+
 }
