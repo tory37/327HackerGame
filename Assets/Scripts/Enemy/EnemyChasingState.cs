@@ -20,7 +20,7 @@ public class EnemyChasingState : State
     {
         GetComponent<Renderer>().material.color = Color.red;
         updateGoalCell();
-        enemyfsm.enemySpeed = 11;
+        enemyfsm.enemySpeed = 8;
         enemyfsm.enemyMat.startColor = enemyfsm.chasingColor;
         
     }
@@ -102,14 +102,14 @@ public class EnemyChasingState : State
         }
     }
 
-    void OnCollisionEnter(Collision other)
+    /*void OnCollisionEnter(Collision other)
     {
         if(other.gameObject.tag == "Player")
         {
             //END THE GAME
             Debug.Log("GAME ENDS HERE");
         }
-    }
+    }*/
 
 
     private void updateDirection()
