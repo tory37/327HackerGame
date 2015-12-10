@@ -193,6 +193,7 @@ public class GameManager : MonoBehaviour
         this.playerHasToken = true;
     }
 
+    //need to get a list of the enemies and set their speed to 0 for a few seconds
     public void StunAllEnemies()
     {
         

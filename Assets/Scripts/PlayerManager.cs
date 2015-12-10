@@ -8,19 +8,11 @@ public class PlayerManager : MonoBehaviour {
 
     PowerUpTypes currentPowerUp = PowerUpTypes.Invisibility;
 
-    GameManager manager;
-
     void Awake()
     {
         powerUpDict.Add(PowerUpTypes.Invisibility, 0);
         powerUpDict.Add(PowerUpTypes.Stun, 0);
     }
-
-	// Use this for initialization
-	void Start () 
-    {
-        manager = GameManager.Instance;
-	}
 	
 	// Update is called once per frame
 	void Update () 
@@ -30,6 +22,8 @@ public class PlayerManager : MonoBehaviour {
         {
             if (powerUpDict[currentPowerUp] > 0)
             {
+                //use the current poewrup 
+                PowerUpManager.Instance.DoPowerUp(currentPowerUp);
                 powerUpDict[currentPowerUp]--;
             }
         }
@@ -49,11 +43,13 @@ public class PlayerManager : MonoBehaviour {
     {
         if (other.tag == "PowerUp")
         {
+            //the the power up script component from the collided object to know what the type the power up is 
             PowerUP pu = other.GetComponent<PowerUP>();
             if (pu != null)
             {
                 powerUpDict[pu.Type]++;
             }
+            //destroy the power up so that the player can only receive it once. 
             GameObject.Destroy(other.gameObject);
         }
     }
