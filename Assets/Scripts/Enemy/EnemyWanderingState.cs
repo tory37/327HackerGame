@@ -5,10 +5,8 @@ public class EnemyWanderingState : State
 {
 
     
-    enum state { wandering, chasing };
 
     direction currentDirection;
-    state currentState;
 
     Cell currentCell, goalCell;
     private int xSize, zSize, countSinceTurn;
@@ -40,15 +38,15 @@ public class EnemyWanderingState : State
     // Update is called once per frame
     public override void OnUpdate()
     {
-
+        enemyfsm.CurrentCell = GameManager.Instance.GetCellPositionIsIn(transform.position);
 
 
 
 
         // Move enemy towards the goal
         movement = (enemyfsm.Goal - transform.position).normalized;
-
-        transform.position += movement * Time.deltaTime * enemyfsm.enemySpeed;
+        Vector3 toMove = transform.position + movement * Time.deltaTime * enemyfsm.enemySpeed;
+        enemyfsm.rb.MovePosition(toMove);
         if ((transform.position - enemyfsm.Goal).magnitude < .1)
         {
 
@@ -76,19 +74,56 @@ public class EnemyWanderingState : State
     }
     public override void OnEnter()
     {
-        GetComponent<Renderer>().material.color = Color.blue;
         enemyfsm.enemySpeed = 5;
-        if(needToChangeDirection())
-        {
-            changeDirection();
-        }
+        enemyfsm.CurrentCell = GameManager.Instance.GetCellPositionIsIn(transform.position);
+        enemyfsm.GoalCell = enemyfsm.CurrentCell;
+        enemyfsm.Goal = new Vector3(enemyfsm.CurrentCell.cellCenter.x, 1f, enemyfsm.CurrentCell.cellCenter.z);
         enemyfsm.enemyMat.startColor = enemyfsm.wanderingColor;
     }
     public override void CheckTransitions()
     {
-        Collider[] col = Physics.OverlapSphere(transform.position, 5, 1024);
+        if (checkWallBetweenPlayer())
+        {
+            return;
+        }
+
+        Collider[] col = Physics.OverlapSphere(transform.position, 8, 1024);
         if (col.Length > 0)
         {
+            int x = enemyfsm.CurrentCell.x;
+            int z = enemyfsm.CurrentCell.z;
+            Cell playerIsIn = GameManager.Instance.GetCellPositionIsIn(GameManager.Instance.GetPlayerPosition());
+            //if the player is on the other side of the wall, don't transition
+            //check right cell
+            if(playerIsIn.x == x + 1)
+            {
+                if(enemyfsm.CurrentCell.rightBlocked)
+                {
+                    return;
+                }
+            }
+            if(playerIsIn.x == x - 1)
+            {
+                if(playerIsIn.rightBlocked)
+                {
+                    return;
+                }
+            }
+            if(playerIsIn.z == z + 1)
+            {
+                if(enemyfsm.CurrentCell.downBlocked)
+                {
+                    return;
+                }
+            }
+            if(playerIsIn.z == z - 1)
+            {
+                if(playerIsIn.downBlocked)
+                {
+                    return;
+                }
+            }
+
             enemyfsm.AttemptTransition(EnemyStates.Chasing);
         }
     }
@@ -749,5 +784,85 @@ public class EnemyWanderingState : State
         transform.position = new Vector3(XInUnity, 1f, ZInUnity);
         currentCell = GameManager.Instance.getCell(randomX, randomZ);
     }
+
+    private void pickRandomDirection()
+    {
+        int x = enemyfsm.CurrentCell.x;
+        int z = enemyfsm.CurrentCell.z;
+        if(!enemyfsm.CurrentCell.downBlocked)
+        {
+            enemyfsm.GoalCell = GameManager.Instance.getCell(x, z + 1);
+
+        }
+        else if(!enemyfsm.CurrentCell.rightBlocked)
+        {
+            enemyfsm.GoalCell = GameManager.Instance.getCell(x + 1, z);
+        }
+        else if(!GameManager.Instance.getCell(x, z - 1).downBlocked)
+        {
+            enemyfsm.GoalCell = GameManager.Instance.getCell(x, z - 1);
+        }
+        else if(!GameManager.Instance.getCell(x - 1, z).rightBlocked)
+        {
+            enemyfsm.GoalCell = GameManager.Instance.getCell(x - 1, z);
+        }
+        enemyfsm.Goal = new Vector3(enemyfsm.GoalCell.cellCenter.x, 1f, enemyfsm.GoalCell.cellCenter.z);
+    }
+
+
+    private bool checkWallBetweenPlayer()
+    {
+        int x = enemyfsm.CurrentCell.x;
+        int z = enemyfsm.CurrentCell.z;
+        Cell playerIsIn = GameManager.Instance.GetCellPositionIsIn(GameManager.Instance.GetPlayerPosition());
+        //if the player is in the right cell
+        if (playerIsIn.x == x + 1)
+        {
+            if (enemyfsm.CurrentCell.rightBlocked)
+            {
+                return true;
+            }
+        }
+        //if the player is in the left cell
+        if (playerIsIn.x == x - 1)
+        {
+            if (playerIsIn.rightBlocked)
+            {
+                return true;
+            }
+        }
+        //if the player is in the down cell
+        if (playerIsIn.z == z + 1)
+        {
+            if (enemyfsm.CurrentCell.downBlocked)
+            {
+                return true;
+            }
+        }
+        //if the player is in the up cell
+        if (playerIsIn.z == z - 1)
+        {
+            if (playerIsIn.downBlocked)
+            {
+                return true;
+            }
+        }
+        return false;
+
+
+    }
+    void OnCollisionEnter(Collision other)
+    {
+        if (other.gameObject.tag == "wall")
+        {
+            enemyfsm.CurrentCell = GameManager.Instance.GetCellPositionIsIn(transform.position);
+            enemyfsm.GoalCell = enemyfsm.CurrentCell;
+            enemyfsm.Goal = new Vector3(enemyfsm.GoalCell.cellCenter.x, 1f, enemyfsm.GoalCell.cellCenter.z);
+        }
+        
+    }
+
+    
+
 
 }
