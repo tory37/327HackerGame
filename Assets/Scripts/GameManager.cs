@@ -9,7 +9,8 @@ public class GameManager : MonoBehaviour
 	#region Editor Interface
 
 	[SerializeField]
-    private GameObject PlayerRef, mazeGenerator, enemyPrefab, goalToken;
+    private GameObject PlayerRef, mazeGenerator, enemyPrefab, goalToken, invisPowerup, stunPowerup;
+
 
 	public int NextLevel
 	{
@@ -197,5 +198,22 @@ public class GameManager : MonoBehaviour
     public void StunAllEnemies()
     {
         
+    }
+
+    public void HidePlayer()
+    {
+        StartCoroutine(invisibility());
+    }
+
+    IEnumerator invisibility()
+    {
+        PlayerRef.layer = 0;
+        float time = 0.0f;
+        while(time < 5.0f)
+        {
+            yield return new WaitForSeconds(.5f);
+            time += .5f;
+        }
+        PlayerRef.layer = 10;
     }
 }
