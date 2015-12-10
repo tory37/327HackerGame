@@ -4,18 +4,24 @@ using System.Collections;
 /// <summary>
 /// Implement this to make a class a state
 /// </summary>
-public abstract class State
+public abstract class State : MonoBehaviour
 {
-	public string Identifier { get; private set; }
+	#region FSM Inspector Variables
 
-	/// <summary>
-	/// Constructor
-	/// </summary>
-	/// <param name="identifier">A description or name of the state for referencing</param>
-	public State (string identifier)
+	[SerializeField, HideInInspector]
+	public bool IsStateExpanded = false;
+
+	#endregion
+
+	public string Identifier
 	{
-		Identifier = identifier;
+		get { return identifier; }
+#if UNITY_EDITOR
+		set { identifier = value; }
+#endif
 	}
+	[SerializeField]
+	private string identifier;
 
 	/// <summary>
 	/// Use this function to do anything you would need to do in
@@ -56,3 +62,8 @@ public abstract class State
 	/// </summary>
     public virtual void CheckTransitions() { }
 }
+
+public enum TestingEnum
+{
+
+}  

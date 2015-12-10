@@ -56,6 +56,14 @@ public class MazeGenerator : MonoBehaviour {
     [SerializeField]
     private GameObject wallPrefab, floorPrefab, ceilingPrefab;
 
+    /// <summary>
+    /// This allows us to specify the way that the exterior walls should look separately
+    /// from the interior walls of the maze
+    /// </summary>
+    [SerializeField]
+    private Material exteriorWallColor;
+
+
     //lists holding the floor and ceiling prefabs used in the mini-map revelation
     public List<GameObject> ceilingPieces;
 
@@ -276,15 +284,15 @@ public class MazeGenerator : MonoBehaviour {
 
 
         //We're going to remove the bottom and right sides in the maze to allow for
-        //placement of the walls
+        //'manual' placement of the opaque walls
         for(int i = 0; i < xSize; i++)
         {
-            theMaze[i, zSize - 1].downBlocked = true;
+            theMaze[i, zSize - 1].downBlocked = false;
         }
 
         for(int i = 0; i < zSize; i++)
         {
-            theMaze[xSize - 1, i].rightBlocked = true;
+            theMaze[xSize - 1, i].rightBlocked = false;
         }
 
     }
@@ -306,35 +314,53 @@ public class MazeGenerator : MonoBehaviour {
 
         
         //Add the prefabs for the external walls
-        for(int i = -1; i < xSize*2; i += 1)
+        for (int i = -1; i < xSize * 2; i += 1)
         {
             GameObject wall = (GameObject)Instantiate(wallPrefab);
-            wall.transform.position = new Vector3(i* cellWidth, 0, -cellWidth);
+            wall.transform.position = new Vector3(i * cellWidth, 0, -cellWidth);
+            foreach (Renderer child in wall.GetComponentsInChildren<Renderer>())
+            {
+                child.material = exteriorWallColor;
+            }
             GameObject ceiling = (GameObject)Instantiate(ceilingPrefab);
             ceiling.transform.position = new Vector3(i * cellWidth, wallHeight, -cellWidth);
         }
-        /*
-        for(int i = -1; i <= xSize*2; i += 1)
+
+        for (int i = 0; i <= xSize * 2 -1; i += 1)
         {
             GameObject wall = (GameObject)Instantiate(wallPrefab);
-            wall.transform.position = new Vector3(i, 0, 2*zSize);
+            wall.transform.position = new Vector3(i * cellWidth, 0, 2 * cellWidth * zSize - cellWidth);
+            foreach (Renderer child in wall.GetComponentsInChildren<Renderer>())
+            {
+                child.material = exteriorWallColor;
+            }
+            GameObject ceiling = (GameObject)Instantiate(ceilingPrefab);
+            ceiling.transform.position = new Vector3(i * cellWidth, wallHeight, 2 * cellWidth * zSize - cellWidth);
         }
-        */
 
-        for(int i = 0; i < zSize*2; i += 1)
+        for (int i = 0; i < zSize * 2; i += 1)
         {
             GameObject wall = (GameObject)Instantiate(wallPrefab);
             wall.transform.position = new Vector3(-cellWidth, 0, i * cellWidth);
+            foreach (Renderer child in wall.GetComponentsInChildren<Renderer>())
+            {
+                child.material = exteriorWallColor;
+            }
             GameObject ceiling = (GameObject)Instantiate(ceilingPrefab);
             ceiling.transform.position = new Vector3(-cellWidth, wallHeight, i * cellWidth);
         }
-        /*
-        for(int i = 0; i < zSize*2; i += 1)
+
+        for (int i = 0; i < zSize * 2; i += 1)
         {
             GameObject wall = (GameObject)Instantiate(wallPrefab);
-            wall.transform.position = new Vector3(2*xSize, 0, i);
+            wall.transform.position = new Vector3(2 * cellWidth * xSize - cellWidth, 0, i * cellWidth);
+            foreach (Renderer child in wall.GetComponentsInChildren<Renderer>())
+            {
+                child.material = exteriorWallColor;
+            }
+            GameObject ceiling = (GameObject)Instantiate(ceilingPrefab);
+            ceiling.transform.position = new Vector3(2 * cellWidth * xSize - cellWidth, wallHeight, -cellWidth);
         }
-        */
 
         //The position of the cell will be iteratively determined, starting in 
         //the first cell
@@ -403,9 +429,11 @@ public class MazeGenerator : MonoBehaviour {
                     ceilingPieces.Add(ceiling);
                 }
 
-
-                centerPiece = (GameObject)Instantiate(wallPrefab);
-                centerPiece.transform.position = new Vector3(x * 2 * cellWidth + cellWidth, 0, z * 2 * cellWidth + cellWidth);
+                if(x != xSize -1 && z != zSize -1)
+                {
+                    centerPiece = (GameObject)Instantiate(wallPrefab);
+                    centerPiece.transform.position = new Vector3(x * 2 * cellWidth + cellWidth, 0, z * 2 * cellWidth + cellWidth);
+                }
                 ceiling = (GameObject)Instantiate(ceilingPrefab);
                 ceiling.transform.position = new Vector3(x * 2 * cellWidth + cellWidth, wallHeight, z * 2 * cellWidth + cellWidth);
 
@@ -414,6 +442,17 @@ public class MazeGenerator : MonoBehaviour {
             }
 
             currentCellCenter.z += cellWidth * 2;
+        }
+        //We need to reset these values as true, so that the game manager and enemies realize these walls are blocked
+
+        for (int i = 0; i < xSize; i++)
+        {
+            theMaze[i, zSize - 1].downBlocked = true;
+        }
+
+        for (int i = 0; i < zSize; i++)
+        {
+            theMaze[xSize - 1, i].rightBlocked = true;
         }
 
         this.theMaze = theMaze;
@@ -490,5 +529,7 @@ public class MazeGenerator : MonoBehaviour {
     {
         //not necessary, methinks
     }
+
+    
 	
 }
