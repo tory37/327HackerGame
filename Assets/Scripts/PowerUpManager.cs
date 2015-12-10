@@ -31,7 +31,7 @@ public class PowerUpManager : MonoBehaviour {
     {
         //start a coroutine to hide the player for a set amount of item
         
-        //GameManager.Instance.HidePlayer();
+        GameManager.Instance.HidePlayer();
     }
 
     //stun the enemies
