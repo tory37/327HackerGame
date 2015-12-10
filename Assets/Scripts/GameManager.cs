@@ -35,6 +35,8 @@ public class GameManager : MonoBehaviour
 
     private bool playerHasToken;
 
+    private bool playerHidden;
+
     public static GameManager Instance
     {
         get
@@ -60,6 +62,7 @@ public class GameManager : MonoBehaviour
     {
         instance = this;
         playerHasToken = false;
+        playerHidden = false;
         
     }
 
@@ -93,6 +96,8 @@ public class GameManager : MonoBehaviour
 
         GameObject goal = Instantiate(goalToken);
         goal.transform.position = getCell(goalX, goalZ).cellCenter;
+
+        //place the poewerUps
 
 	}
 	
@@ -174,5 +179,24 @@ public class GameManager : MonoBehaviour
     public void NotifyPlayerHasToken()
     {
         this.playerHasToken = true;
+    }
+
+    public void StunAllEnemies()
+    {
+        
+    }
+
+    public void HidePlayer()
+    {
+        StartCoroutine(HideTheNigguh());
+    }
+
+    private IEnumerator HideTheNigguh()
+    {
+        Debug.Log("Nigguh you good to chill, yous invisible!");
+        playerHidden = true;
+        yield return new WaitForSeconds(5);
+        Debug.Log("Run nigguh! Yous no longer invisible!");
+        playerHidden = false;
     }
 }
