@@ -11,14 +11,14 @@ public class GameManager : MonoBehaviour
 	[SerializeField]
     private GameObject PlayerRef, mazeGenerator, enemyPrefab, goalToken;
 
-	public string NextLevel
+	public int NextLevel
 	{
 		get
 		{
-			return nextLevel;
+			return nextLevelIndex;
 		}
 	}
-	[SerializeField] private string nextLevel;
+	[SerializeField] private int nextLevelIndex;
 
 	#endregion
 
@@ -54,12 +54,15 @@ public class GameManager : MonoBehaviour
         }
     }
 
-
-
     void Awake()
     {
+		Cursor.lockState = CursorLockMode.Locked;
+		Cursor.visible = false;
+
         instance = this;
         playerHasToken = false;
+
+		UIManager.Instance.Show( "InGameGui" );
         
     }
 

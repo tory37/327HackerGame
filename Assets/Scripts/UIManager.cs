@@ -8,19 +8,21 @@ public class UIManager : MonoBehaviour {
 
 	[SerializeField] private List<Canvas> canvases;
 
+	private int currentLevel = 0;
+
 	public static UIManager Instance
 	{
 		get {
 			return instance;
 		}
 		set {
-			if (instance == null)
+			if (instance != null)
 				Destroy(value.gameObject);
 			else
 				instance = value;
 		}
 	}
-	private static UIManager instance;
+	private static UIManager instance = null;
 
 	public static Canvas CurrentCanvas
 	{
@@ -38,12 +40,28 @@ public class UIManager : MonoBehaviour {
 	void Awake()
 	{
 		DontDestroyOnLoad( transform.gameObject );
-		instance = this;
+		Instance = this;
 	}
 
-	public void Transition(string sceneName)
+	public void Transition(int sceneIndex)
 	{
-		Application.LoadLevel( sceneName );
+		StartCoroutine( ITransition( sceneIndex ) );
+	}
+
+	IEnumerator ITransition( int sceneIndex )
+	{
+		Show( "Curtain" );
+		yield return new WaitForEndOfFrame();
+		yield return new WaitForEndOfFrame();
+		yield return new WaitForEndOfFrame();
+		currentLevel = sceneIndex;
+		Application.LoadLevel( sceneIndex );
+	}
+
+	void OnLevelWasLoaded( int level )
+	{
+		if ( level == currentLevel )
+			Hide( "Curtain" );
 	}
 
 	public void ChangeMenu (string toCanvas)
