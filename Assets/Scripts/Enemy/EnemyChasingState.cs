@@ -1,10 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class EnemyChasingState : State
 {
     direction currentDirection;
-
     
     private int xSize, zSize, countSinceTurn;
     private Vector3 movement;
@@ -20,6 +20,8 @@ public class EnemyChasingState : State
     {
         GetComponent<Renderer>().material.color = Color.red;
         updateGoalCell();
+        enemyfsm.enemySpeed = 11;
+        
     }
 
     public override void OnUpdate()
@@ -38,15 +40,23 @@ public class EnemyChasingState : State
             updateGoalCell();
 
         }
+        checkPlayerPos();
+
     }
 
     public override void CheckTransitions()
     {
-        Collider[] col = Physics.OverlapSphere(transform.position, 12, 1024);
+        Collider[] col = Physics.OverlapSphere(transform.position, 8, 1024);
         if (col.Length == 0)
         {
             enemyfsm.AttemptTransition(EnemyStates.Wandering);
         }
+    }
+
+    public override void OnExit()
+    {
+        enemyfsm.GoalCell = GameManager.Instance.GetCellPositionIsIn(transform.position);
+        enemyfsm.Goal = new Vector3(enemyfsm.GoalCell.cellCenter.x, 1f, enemyfsm.GoalCell.cellCenter.z);
     }
 
 
@@ -62,6 +72,9 @@ public class EnemyChasingState : State
 
         enemyfsm.Goal = new Vector3(enemyfsm.GoalCell.cellCenter.x, 1f, enemyfsm.GoalCell.cellCenter.z);
         
+
+        
+        
     }
 
 
@@ -74,12 +87,27 @@ public class EnemyChasingState : State
             if(enemyfsm.CurrentCell.ID != GameManager.Instance.GetCellPositionIsIn(GameManager.Instance.GetPlayerPosition()).ID)
             {
                 playerInCell = false;
-                updateGoalCell();
+                
+                
             }
+            enemyfsm.GoalCell = GameManager.Instance.GetCellPositionIsIn(GameManager.Instance.GetPlayerPosition());
+            enemyfsm.Goal = new Vector3(enemyfsm.GoalCell.cellCenter.x, 1f, enemyfsm.GoalCell.cellCenter.z);
+            
+            updateGoalCell();
         }
         else
         {
             movement = (enemyfsm.Goal - transform.position).normalized;
         }
+    }
+
+    private void updateDirection()
+    {
+        
+    }
+
+    private void checkPlayerPos()
+    {
+        
     }
 }
