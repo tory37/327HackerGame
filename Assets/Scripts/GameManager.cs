@@ -38,6 +38,7 @@ public class GameManager : MonoBehaviour
     private bool playerHasToken;
 
     private bool playerHidden;
+    public bool PlayerHidden { get{return playerHidden;} set{playerHidden = value;} }
 
     public static GameManager Instance
     {
@@ -195,19 +196,5 @@ public class GameManager : MonoBehaviour
     public void StunAllEnemies()
     {
         
-    }
-
-    public void HidePlayer()
-    {
-        StartCoroutine(HideTheNigguh());
-    }
-
-    private IEnumerator HideTheNigguh()
-    {
-        Debug.Log("Nigguh you good to chill, yous invisible!");
-        playerHidden = true;
-        yield return new WaitForSeconds(5);
-        Debug.Log("Run nigguh! Yous no longer invisible!");
-        playerHidden = false;
     }
 }
