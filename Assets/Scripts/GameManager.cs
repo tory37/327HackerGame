@@ -4,12 +4,25 @@ using System;
 
 public enum direction { up, down, left, right };
 
-public class GameManager : MonoBehaviour 
+public class GameManager : MonoBehaviour
 {
-    [SerializeField]
+	#region Editor Interface
+
+	[SerializeField]
     private GameObject PlayerRef, mazeGenerator, enemyPrefab, goalToken;
 
-    private MazeGenerator mazeGeneratorRef;
+	public string NextLevel
+	{
+		get
+		{
+			return nextLevel;
+		}
+	}
+	[SerializeField] private string nextLevel;
+
+	#endregion
+
+	private MazeGenerator mazeGeneratorRef;
     
     private int numEnemies;
 

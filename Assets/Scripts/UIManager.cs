@@ -92,4 +92,9 @@ public class UIManager : MonoBehaviour {
 	{
 		Application.Quit();
 	}
+
+	public void LoadNextLevel()
+	{
+		Transition( GameManager.Instance.NextLevel );
+	}
 }
