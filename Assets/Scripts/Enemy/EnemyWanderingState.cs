@@ -42,29 +42,38 @@ public class EnemyWanderingState : State
 
 
 
-
-        // Move enemy towards the goal
-        movement = (enemyfsm.Goal - transform.position).normalized;
-        Vector3 toMove = transform.position + movement * Time.deltaTime * enemyfsm.enemySpeed;
-        enemyfsm.rb.MovePosition(toMove);
-        if ((transform.position - enemyfsm.Goal).magnitude < .1)
+        if (enemyfsm.CanMove)
         {
-
-            transform.position = enemyfsm.Goal;
-            enemyfsm.CurrentCell = enemyfsm.GoalCell;
-            // After enemy moves, check to see if it needs to change direction
-            if (needToChangeDirection())
+            // Move enemy towards the goal
+            movement = (enemyfsm.Goal - transform.position).normalized;
+            Vector3 toMove = transform.position + movement * Time.deltaTime * enemyfsm.enemySpeed;
+            enemyfsm.rb.MovePosition(toMove);
+            if ((transform.position - enemyfsm.Goal).magnitude < .1)
             {
-                changeDirection();
-            }
-            else
-            {
-                checkVoluntaryChangeDirection();
-            }
+                // Move enemy towards the goal
+                movement = (enemyfsm.Goal - transform.position).normalized;
+
+                transform.position += movement * Time.deltaTime * enemyfsm.enemySpeed;
+                if ((transform.position - enemyfsm.Goal).magnitude < .1)
+                {
+
+                    transform.position = enemyfsm.Goal;
+                    enemyfsm.CurrentCell = enemyfsm.GoalCell;
+                    // After enemy moves, check to see if it needs to change direction
+                    if (needToChangeDirection())
+                    {
+                        changeDirection();
+                    }
+                    else
+                    {
+                        checkVoluntaryChangeDirection();
+                    }
 
 
-            // Update the goal cell according to the update position.
-            updateGoalCell();
+                    // Update the goal cell according to the update position.
+                    updateGoalCell();
+                }
+            }
         }
 
 

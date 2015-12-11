@@ -265,6 +265,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
         {
             if(other.gameObject.tag == "Enemy")
             {
+                //TORY
                 //GAME ENDS HERE
                 Debug.Log("GAME ENDS HERE");
             }

@@ -6,14 +6,30 @@ public enum PowerUpTypes { Stun, Invisibility }
 public class PowerUpManager : MonoBehaviour {
 
     //make sure there is only one instance of this script (via a jank singleton pattern)
-    public static PowerUpManager Instance { get { return instance; } set { instance = value; } }
     private static PowerUpManager instance;
+    public static PowerUpManager Instance
+    {
+        get
+        {
+            return instance;
+        }
+
+        set
+        {
+            if (instance != null)
+                Destroy(value.gameObject);
+            else
+            {
+                instance = value;
+            }
+
+        }
+    }
 
     void Awake()
     {
-        Instance = this;
+        instance = this;
     }
-
     public void DoPowerUp(PowerUpTypes type)
     {
         //check the type passed and call the proper powerup function based on the parameter

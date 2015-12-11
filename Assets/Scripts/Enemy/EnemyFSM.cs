@@ -18,6 +18,8 @@ public class EnemyFSM : MonoFSM {
     public int XSize { get; set; }
     public int ZSize { get; set; }
 
+    public bool CanMove = true;
+
     public Rigidbody rb;
 
     

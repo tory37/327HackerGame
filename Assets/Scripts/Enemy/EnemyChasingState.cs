@@ -26,17 +26,19 @@ public class EnemyChasingState : State
 
     public override void OnUpdate()
     {
-        enemyfsm.CurrentCell = GameManager.Instance.GetCellPositionIsIn(transform.position);
-        //checkWallBetweenPlayer();
-        
-        Vector3 playerCellPos = GameManager.Instance.GetCellPositionIsIn(GameManager.Instance.GetPlayerPosition()).cellCenter;
-        movement = (playerCellPos - transform.position).normalized;
-        Vector3 toMove = transform.position + movement * Time.deltaTime * enemyfsm.enemySpeed;
-        enemyfsm.rb.MovePosition(toMove);
-        
+        if (enemyfsm.CanMove)
+        {
+            enemyfsm.CurrentCell = GameManager.Instance.GetCellPositionIsIn(transform.position);
+            //checkWallBetweenPlayer();
 
-        transform.position += movement * Time.deltaTime * enemyfsm.enemySpeed;
-        
+            Vector3 playerCellPos = GameManager.Instance.GetCellPositionIsIn(GameManager.Instance.GetPlayerPosition()).cellCenter;
+            movement = (playerCellPos - transform.position).normalized;
+            Vector3 toMove = transform.position + movement * Time.deltaTime * enemyfsm.enemySpeed;
+            enemyfsm.rb.MovePosition(toMove);
+
+
+            transform.position += movement * Time.deltaTime * enemyfsm.enemySpeed;
+        }
         
 
     }

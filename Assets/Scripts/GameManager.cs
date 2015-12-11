@@ -85,9 +85,36 @@ public class GameManager : MonoBehaviour
         }
         //start placing enemies
         numEnemies = Convert.ToInt32((xMax * zMax) / 50 * 1.5);
+        int numPowerUps = Convert.ToInt32((xMax * zMax) / 100);
+        enemies = new GameObject[numEnemies];
+        int powerUpX;
+        int powerUpZ;
+        GameObject powerUp;
+
+        for(int i = 0; i < numPowerUps; i++)
+        {
+            powerUpX = UnityEngine.Random.Range(0, xMax);
+            powerUpZ = UnityEngine.Random.Range(0, zMax);
+            powerUp = Instantiate(invisPowerup);
+            Vector3 placement = getCell(powerUpX, powerUpZ).cellCenter;
+            placement = new Vector3(placement.x, 1f, placement.z);
+
+            powerUp.transform.position = placement;
+            
+            powerUpX = UnityEngine.Random.Range(0, xMax);
+            powerUpZ = UnityEngine.Random.Range(0, zMax);
+            powerUp = Instantiate(stunPowerup);
+            placement = getCell(powerUpX, powerUpZ).cellCenter;
+            placement = new Vector3(placement.x, 1f, placement.z);
+
+            powerUp.transform.position = placement;
+            
+        }
+
         for(int i = 0; i < numEnemies; i++)
         {
-            Instantiate(enemyPrefab);
+            enemies[i] = Instantiate(enemyPrefab);
+
         }
         //place the goal token
         goalX = UnityEngine.Random.Range(0, xMax);
@@ -197,7 +224,7 @@ public class GameManager : MonoBehaviour
     //need to get a list of the enemies and set their speed to 0 for a few seconds
     public void StunAllEnemies()
     {
-        
+        StartCoroutine(stunEnemies());
     }
 
     public void HidePlayer()
@@ -215,5 +242,24 @@ public class GameManager : MonoBehaviour
             time += .5f;
         }
         PlayerRef.layer = 10;
+    }
+
+    IEnumerator stunEnemies()
+    {
+        float time = 0.0f;
+        for(int i = 0; i < numEnemies; i++)
+        {
+            enemies[i].GetComponent<EnemyFSM>().CanMove = false;
+        }
+        while(time < 5.0f)
+        {
+            yield return new WaitForSeconds(.5f);
+            time += .5f;
+        }
+        for(int i = 0; i < numEnemies; i++)
+        {
+            enemies[i].GetComponent<EnemyFSM>().CanMove = true;
+        }
+
     }
 }
