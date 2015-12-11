@@ -39,7 +39,6 @@ public class UIManager : MonoBehaviour {
 
 	void Awake()
 	{
-		DontDestroyOnLoad( transform.gameObject );
 		Instance = this;
 	}
 

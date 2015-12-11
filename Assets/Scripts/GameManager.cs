@@ -200,6 +200,7 @@ public class GameManager : MonoBehaviour
 		if (Input.GetButtonDown("Pause"))
 		{
 			UIManager.Instance.Show("PauseMenu");
+			UIManager.Instance.SetTimeScale( 0 );
 			Cursor.lockState = CursorLockMode.None;
 			Cursor.visible = true;
 			//Time.timeScale = 0;
