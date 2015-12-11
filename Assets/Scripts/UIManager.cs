@@ -22,7 +22,7 @@ public class UIManager : MonoBehaviour {
 				instance = value;
 		}
 	}
-	private static UIManager instance = null;
+	private static UIManager instance;
 
 	public static Canvas CurrentCanvas
 	{
@@ -37,9 +37,19 @@ public class UIManager : MonoBehaviour {
 	}
 	private static Canvas currentCanvas;
 
+	private Dictionary<int, List<string>> startingMenus;
+
 	void Awake()
 	{
 		Instance = this;
+
+		startingMenus = new Dictionary<int, List<string>>();
+		startingMenus.Add( 0, new List<string> { "MainMenu" } );
+		startingMenus.Add( 1, new List<string> { "InGameGui" } );
+		startingMenus.Add( 2, new List<string> { "InGameGui" } );
+		startingMenus.Add( 3, new List<string> { "InGameGui" } );
+		startingMenus.Add( 4, new List<string> { "GameWon" } );
+		startingMenus.Add( 5, new List<string> { "OnWinMenu", "OnDeathMenu",  } );
 	}
 
 	public void Transition(int sceneIndex)
@@ -59,8 +69,10 @@ public class UIManager : MonoBehaviour {
 
 	void OnLevelWasLoaded( int level )
 	{
-		if ( level == currentLevel )
-			Hide( "Curtain" );
+		foreach (Canvas canvas in canvases.Where(c => !startingMenus[level].Contains(c.name)))
+		{
+			canvas.gameObject.SetActive( false );
+		}
 	}
 
 	public void ChangeMenu (string toCanvas)
@@ -110,8 +122,42 @@ public class UIManager : MonoBehaviour {
 		Application.Quit();
 	}
 
+	public void SetCurrentLevel()
+	{
+		currentLevel = Application.loadedLevel;
+	}
+
 	public void LoadNextLevel()
 	{
-		Transition( GameManager.Instance.NextLevel );
+		Transition( currentLevel + 1 );
+	}
+
+	public void ReloadCurrentLevel()
+	{
+		Transition( currentLevel );
+	}
+
+	public void ReloadLevel()
+	{
+		Transition( Application.loadedLevel );
+	}
+
+	public void WinGame()
+	{
+		currentLevel = Application.loadedLevel;
+		Show( "OnWinMenu" );
+		Cursor.lockState = CursorLockMode.None;
+		Cursor.visible = true;
+		Application.LoadLevel( "EmptyMenuScene" );
+
+	}
+
+	public void LoseGame()
+	{
+		currentLevel = Application.loadedLevel;
+		Show( "OnDeathMenu" );
+		Cursor.lockState = CursorLockMode.None;
+		Cursor.visible = true;
+		Application.LoadLevel( "EmptyMenuScene" );
 	}
 }

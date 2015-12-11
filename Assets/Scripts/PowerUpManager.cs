@@ -30,6 +30,7 @@ public class PowerUpManager : MonoBehaviour {
     {
         instance = this;
     }
+
     public void DoPowerUp(PowerUpTypes type)
     {
         //check the type passed and call the proper powerup function based on the parameter

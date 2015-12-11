@@ -1,11 +1,11 @@
-using System;
+﻿using System;
 using UnityEngine;
 using UnityStandardAssets.CrossPlatformInput;
 using UnityStandardAssets.Characters.FirstPerson;
 
 [RequireComponent( typeof( Rigidbody ) )]
 [RequireComponent( typeof( CapsuleCollider ) )]
-public class RigidbodyFirstPersonController : MonoBehaviour
+public class PlayerController : MonoBehaviour
 {
 	[Serializable]
 	public class MovementSettings
@@ -211,10 +211,10 @@ public class RigidbodyFirstPersonController : MonoBehaviour
 	{
 
 		Vector2 input = new Vector2
-			{
-				x = CrossPlatformInputManager.GetAxis( "Horizontal" ),
-				y = CrossPlatformInputManager.GetAxis( "Vertical" )
-			};
+		{
+			x = CrossPlatformInputManager.GetAxis( "Horizontal" ),
+			y = CrossPlatformInputManager.GetAxis( "Vertical" )
+		};
 		movementSettings.UpdateDesiredTargetSpeed( input );
 		return input;
 	}
@@ -261,5 +261,15 @@ public class RigidbodyFirstPersonController : MonoBehaviour
 		}
 	}
 
-
+	void OnCollisionEnter( Collision other )
+	{
+		if ( other.gameObject.tag == "Enemy" )
+		{
+			//TORY
+			//GAME ENDS HERE
+			//Application.LoadLevel(Application.loadedLevelName);
+			//Debug.Log("GAME ENDS HERE");
+			UIManager.Instance.LoseGame();
+		}
+	}
 }

@@ -12,9 +12,12 @@ public class PlayerManager : MonoBehaviour {
     {
         powerUpDict.Add(PowerUpTypes.Invisibility, 0);
         powerUpDict.Add(PowerUpTypes.Stun, 0);
-
-		GameSpecificGUI.Instance.CyclePUP( currentPowerUp, powerUpDict[currentPowerUp] );
     }
+
+	void Start()
+	{
+		GameSpecificGUI.Instance.CyclePUP( currentPowerUp, powerUpDict[currentPowerUp] );
+	}
 
 	// Update is called once per frame
 	void Update () 

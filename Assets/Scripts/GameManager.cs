@@ -11,16 +11,6 @@ public class GameManager : MonoBehaviour
 	[SerializeField]
     private GameObject PlayerRef, mazeGenerator, enemyPrefab, goalToken, invisPowerup, stunPowerup;
 
-
-	public int NextLevel
-	{
-		get
-		{
-			return nextLevelIndex;
-		}
-	}
-	[SerializeField] private int nextLevelIndex;
-
 	#endregion
 
 	private MazeGenerator mazeGeneratorRef;
@@ -142,24 +132,27 @@ public class GameManager : MonoBehaviour
         {
             if (GetCellPositionIsIn(PlayerRef.transform.position).ID == 0)
             {
-                //The Game has been won
-                switch(Application.loadedLevelName)
-                {
-                    case "Level1":
-                    {
-                        Application.LoadLevel("Level2");
-                        break;
-                    }case "Level2":
-                    {
-                        Application.LoadLevel("Level3");
-                        break;
-                    }case "Level3":
-                    {
-                        Application.Quit();
-                        break;
-                    }
+				UIManager.Instance.WinGame();
 
-                }
+                //The Game has been won
+				//switch(Application.loadedLevelName)
+				//{
+				//	case "Level1":
+				//	{
+				//		Application.LoadLevel("Level2");
+				//		break;
+				//	}case "Level2":
+				//	{
+				//		Application.LoadLevel("Level3");
+				//		break;
+				//	}case "Level3":
+				//	{
+				//		Application.Quit();
+				//		break;
+				//	}
+
+				//}
+
             }
 
         }

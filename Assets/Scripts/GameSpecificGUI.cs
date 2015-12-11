@@ -26,7 +26,7 @@ public class GameSpecificGUI : MonoBehaviour {
 				instance = value;
 		}
 	}
-	private static GameSpecificGUI instance = null;
+	private static GameSpecificGUI instance;
 
 	private void Awake()
 	{
