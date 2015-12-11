@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-
+​
 public class EnemyChasingState : State
 {
     
@@ -9,12 +9,12 @@ public class EnemyChasingState : State
     
     private Vector3 movement;
     private EnemyFSM enemyfsm;
-
+​
     public override void Initialize(MonoFSM callingfsm)
     {
         enemyfsm = (EnemyFSM)callingfsm;
     }
-
+​
     public override void OnEnter()
     {
         enemyfsm.CurrentCell = GameManager.Instance.GetCellPositionIsIn(transform.position);
@@ -23,38 +23,26 @@ public class EnemyChasingState : State
         enemyfsm.enemyMat.startColor = enemyfsm.chasingColor;
         
     }
-
+​
     public override void OnUpdate()
     {
         if (enemyfsm.CanMove)
         {
-            getMovement();
+            enemyfsm.CurrentCell = GameManager.Instance.GetCellPositionIsIn(transform.position);
+            //checkWallBetweenPlayer();
+
+            Vector3 playerCellPos = GameManager.Instance.GetCellPositionIsIn(GameManager.Instance.GetPlayerPosition()).cellCenter;
+            movement = (playerCellPos - transform.position).normalized;
+            Vector3 toMove = transform.position + movement * Time.deltaTime * enemyfsm.enemySpeed;
+            enemyfsm.rb.MovePosition(toMove);
+
 
             transform.position += movement * Time.deltaTime * enemyfsm.enemySpeed;
-            if ((transform.position - enemyfsm.Goal).magnitude < .1)
-            {
-                transform.position = enemyfsm.Goal;
-                enemyfsm.CurrentCell = enemyfsm.GoalCell;
-
-
-                updateGoalCell();
-
-            }
-            checkPlayerPos();
         }
-        enemyfsm.CurrentCell = GameManager.Instance.GetCellPositionIsIn(transform.position);
-        //checkWallBetweenPlayer();
         
-        Vector3 playerCellPos = GameManager.Instance.GetCellPositionIsIn(GameManager.Instance.GetPlayerPosition()).cellCenter;
-        movement = (playerCellPos - transform.position).normalized;
-        Vector3 toMove = transform.position + movement * Time.deltaTime * enemyfsm.enemySpeed;
-        enemyfsm.rb.MovePosition(toMove);
-        
-
-        transform.position += movement * Time.deltaTime * enemyfsm.enemySpeed;
-
+​
     }
-
+​
     public override void CheckTransitions()
     {
         //if(checkWallBetweenPlayer())
@@ -72,30 +60,30 @@ public class EnemyChasingState : State
             enemyfsm.AttemptTransition(EnemyStates.Pursuit);
         }
     }
-
+​
     public override void OnExit()
     {
         enemyfsm.GoalCell = GameManager.Instance.GetCellPositionIsIn(transform.position);
         enemyfsm.Goal = new Vector3(enemyfsm.GoalCell.cellCenter.x, 1f, enemyfsm.GoalCell.cellCenter.z);
     }
-
-
+​
+​
     private void updateGoalCell()
     {
         enemyfsm.GoalCell = GameManager.Instance.GetCellPositionIsIn(GameManager.Instance.GetPlayerPosition());
-
+​
         
-
+​
         enemyfsm.Goal = new Vector3(enemyfsm.GoalCell.cellCenter.x, 1f, enemyfsm.GoalCell.cellCenter.z);
         
-
+​
         
         
     }
-
-
+​
+​
     
-
+​
     void OnCollisionEnter(Collision other)
     {
         if(other.gameObject.tag == "wall")
@@ -104,9 +92,9 @@ public class EnemyChasingState : State
         }
         
     }
-
+​
     
-
+​
     //private bool checkWallBetweenPlayer()
     //{
     //    int x = enemyfsm.CurrentCell.x;
@@ -152,13 +140,13 @@ public class EnemyChasingState : State
         
         
     //}
-
-
+​
+​
     private void updateDirection()
     {
         
     }
-
+​
     private void checkPlayerPos()
     {
         
