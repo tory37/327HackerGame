@@ -44,12 +44,13 @@ public class PlayerManager : MonoBehaviour {
         }
 	}
 
-    void OnCollisionEnter(Collision col)
+    void OnTriggerEnter(Collider col)
     {
-        if (col.collider.tag == "PowerUp")
+        if (col.tag == "PowerUp")
         {
+            
             //the the power up script component from the collided object to know what the type the power up is 
-            PowerUP pu = col.collider.GetComponent<PowerUP>();
+            PowerUP pu = col.GetComponent<PowerUP>();
             if (pu != null)
             {
                 powerUpDict[pu.Type]++;

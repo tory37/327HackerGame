@@ -27,21 +27,22 @@ public class EnemyChasingState : State
 
     public override void OnUpdate()
     {
-        getMovement();
-
-        
-
-        transform.position += movement * Time.deltaTime * enemyfsm.enemySpeed;
-        if ((transform.position - enemyfsm.Goal).magnitude < .1)
+        if (enemyfsm.CanMove)
         {
-            transform.position = enemyfsm.Goal;
-            enemyfsm.CurrentCell = enemyfsm.GoalCell;
+            getMovement();
+
+            transform.position += movement * Time.deltaTime * enemyfsm.enemySpeed;
+            if ((transform.position - enemyfsm.Goal).magnitude < .1)
+            {
+                transform.position = enemyfsm.Goal;
+                enemyfsm.CurrentCell = enemyfsm.GoalCell;
 
 
-            updateGoalCell();
+                updateGoalCell();
 
+            }
+            checkPlayerPos();
         }
-        checkPlayerPos();
 
     }
 
