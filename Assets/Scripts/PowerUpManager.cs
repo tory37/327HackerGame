@@ -30,22 +30,13 @@ public class PowerUpManager : MonoBehaviour {
     private void Invisibility()
     {
         //start a coroutine to hide the player for a set amount of item
-        StartCoroutine(HidePlayer());
+        
+        GameManager.Instance.HidePlayer();
     }
 
     //stun the enemies
     private void Stun()
     {
         GameManager.Instance.StunAllEnemies();
-    }
-
-    private IEnumerator HidePlayer()
-    {
-        //hide the player for 5 seconds by setting a boolean to true. if an enemy comes within sight range of the player the boolean is checked
-        //to know if they can actually see the player or not
-        GameManager.Instance.PlayerHidden = true;
-        yield return new WaitForSeconds(5);
-        GameManager.Instance.PlayerHidden = false;
-
     }
 }

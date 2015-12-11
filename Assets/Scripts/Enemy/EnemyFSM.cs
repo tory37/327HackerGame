@@ -5,7 +5,8 @@ using System.Collections.Generic;
 public enum EnemyStates
 {
     Wandering,
-    Chasing
+    Chasing,
+    Pursuit
 }
 
 public class EnemyFSM : MonoFSM {
@@ -19,6 +20,7 @@ public class EnemyFSM : MonoFSM {
 
     public bool CanMove = true;
 
+    public Rigidbody rb;
 
     
     public Color wanderingColor, chasingColor;
@@ -33,7 +35,7 @@ public class EnemyFSM : MonoFSM {
         GameManager.Instance.getMazeSize(out x, out z);
         XSize = x;
         ZSize = z;
-
+        rb = GetComponent<Rigidbody>();
         setInitialLocation();
 
         setInitialDirection();

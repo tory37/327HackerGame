@@ -4,11 +4,10 @@ using System.Collections.Generic;
 
 public class EnemyChasingState : State
 {
-    direction currentDirection;
     
-    private int xSize, zSize, countSinceTurn;
+    
+    
     private Vector3 movement;
-    private bool playerInCell = false;
     private EnemyFSM enemyfsm;
 
     public override void Initialize(MonoFSM callingfsm)
@@ -18,7 +17,7 @@ public class EnemyChasingState : State
 
     public override void OnEnter()
     {
-        GetComponent<Renderer>().material.color = Color.red;
+        enemyfsm.CurrentCell = GameManager.Instance.GetCellPositionIsIn(transform.position);
         updateGoalCell();
         enemyfsm.enemySpeed = 8;
         enemyfsm.enemyMat.startColor = enemyfsm.chasingColor;
@@ -43,15 +42,34 @@ public class EnemyChasingState : State
             }
             checkPlayerPos();
         }
+        enemyfsm.CurrentCell = GameManager.Instance.GetCellPositionIsIn(transform.position);
+        //checkWallBetweenPlayer();
+        
+        Vector3 playerCellPos = GameManager.Instance.GetCellPositionIsIn(GameManager.Instance.GetPlayerPosition()).cellCenter;
+        movement = (playerCellPos - transform.position).normalized;
+        Vector3 toMove = transform.position + movement * Time.deltaTime * enemyfsm.enemySpeed;
+        enemyfsm.rb.MovePosition(toMove);
+        
+
+        transform.position += movement * Time.deltaTime * enemyfsm.enemySpeed;
 
     }
 
     public override void CheckTransitions()
     {
-        Collider[] col = Physics.OverlapSphere(transform.position, 8, 1024);
+        //if(checkWallBetweenPlayer())
+        //{
+        //    return;
+        //}
+        Collider[] col = Physics.OverlapSphere(transform.position, 12, 1024);
         if (col.Length == 0)
         {
             enemyfsm.AttemptTransition(EnemyStates.Wandering);
+        }
+        col = Physics.OverlapSphere(transform.position, 5, 1024);
+        if(col.Length == 1)
+        {
+            enemyfsm.AttemptTransition(EnemyStates.Pursuit);
         }
     }
 
@@ -64,13 +82,9 @@ public class EnemyChasingState : State
 
     private void updateGoalCell()
     {
-        Cell buffer = enemyfsm.GoalCell;
         enemyfsm.GoalCell = GameManager.Instance.GetCellPositionIsIn(GameManager.Instance.GetPlayerPosition());
 
-        if(buffer.ID == enemyfsm.GoalCell.ID)
-        {
-            playerInCell = true;
-        }
+        
 
         enemyfsm.Goal = new Vector3(enemyfsm.GoalCell.cellCenter.x, 1f, enemyfsm.GoalCell.cellCenter.z);
         
@@ -80,37 +94,64 @@ public class EnemyChasingState : State
     }
 
 
-    private void getMovement()
+    
+
+    void OnCollisionEnter(Collision other)
     {
-        if(playerInCell)
+        if(other.gameObject.tag == "wall")
         {
-            
-            movement = (GameManager.Instance.GetPlayerPosition() - transform.position).normalized;
-            if(enemyfsm.CurrentCell.ID != GameManager.Instance.GetCellPositionIsIn(GameManager.Instance.GetPlayerPosition()).ID)
-            {
-                playerInCell = false;
-                
-                
-            }
-            enemyfsm.GoalCell = GameManager.Instance.GetCellPositionIsIn(GameManager.Instance.GetPlayerPosition());
-            enemyfsm.Goal = new Vector3(enemyfsm.GoalCell.cellCenter.x, 1f, enemyfsm.GoalCell.cellCenter.z);
-            
-            updateGoalCell();
+            enemyfsm.AttemptTransition(EnemyStates.Wandering);
         }
-        else
-        {
-            movement = (enemyfsm.Goal - transform.position).normalized;
-        }
+        
     }
 
-    /*void OnCollisionEnter(Collision other)
-    {
-        if(other.gameObject.tag == "Player")
-        {
-            //END THE GAME
-            Debug.Log("GAME ENDS HERE");
-        }
-    }*/
+    
+
+    //private bool checkWallBetweenPlayer()
+    //{
+    //    int x = enemyfsm.CurrentCell.x;
+    //    int z = enemyfsm.CurrentCell.z;
+    //    Cell playerIsIn = GameManager.Instance.GetCellPositionIsIn(GameManager.Instance.GetPlayerPosition());
+    //    //if the player is in the right cell
+    //    if(playerIsIn.x == x + 1)
+    //    {
+    //        if(enemyfsm.CurrentCell.rightBlocked)
+    //        {
+    //            enemyfsm.AttemptTransition(EnemyStates.Wandering);
+    //            return true;
+    //        }
+    //    }
+    //    //if the player is in the left cell
+    //    if(playerIsIn.x == x - 1)
+    //    {
+    //        if(playerIsIn.rightBlocked)
+    //        {
+    //            enemyfsm.AttemptTransition(EnemyStates.Wandering);
+    //            return true;
+    //        }
+    //    }
+    //    //if the player is in the down cell
+    //    if(playerIsIn.z == z + 1)
+    //    {
+    //        if(enemyfsm.CurrentCell.downBlocked)
+    //        {
+    //            enemyfsm.AttemptTransition(EnemyStates.Wandering);
+    //            return true;
+    //        }
+    //    }
+    //    //if the player is in the up cell
+    //    if(playerIsIn.z == z - 1)
+    //    {
+    //        if(playerIsIn.downBlocked)
+    //        {
+    //            enemyfsm.AttemptTransition(EnemyStates.Wandering);
+    //            return true;
+    //        }
+    //    }
+    //    return false;
+        
+        
+    //}
 
 
     private void updateDirection()
