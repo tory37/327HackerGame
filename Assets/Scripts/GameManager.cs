@@ -143,7 +143,23 @@ public class GameManager : MonoBehaviour
             if (GetCellPositionIsIn(PlayerRef.transform.position).ID == 0)
             {
                 //The Game has been won
-                Debug.Log("Woooo!");
+                switch(Application.loadedLevelName)
+                {
+                    case "Level1":
+                    {
+                        Application.LoadLevel("Level2");
+                        break;
+                    }case "Level2":
+                    {
+                        Application.LoadLevel("Level3");
+                        break;
+                    }case "Level3":
+                    {
+                        Application.Quit();
+                        break;
+                    }
+
+                }
             }
 
         }

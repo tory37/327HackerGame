@@ -216,8 +216,8 @@ public class FSMTransition : IEquatable<FSMTransition>
 
 	public FSMTransition(int from, int to)
 	{
-		this.From = from;
-		this.To = to;
+		this.from = from;
+		this.to = to;
 	}
 
 	public bool Equals( FSMTransition other )

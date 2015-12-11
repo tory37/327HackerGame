@@ -267,6 +267,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
             {
                 //TORY
                 //GAME ENDS HERE
+                Application.LoadLevel(Application.loadedLevelName);
                 Debug.Log("GAME ENDS HERE");
             }
         }
