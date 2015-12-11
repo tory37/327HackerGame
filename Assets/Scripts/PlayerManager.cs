@@ -1,23 +1,25 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class PlayerManager : MonoBehaviour {
 
-    private int StunCount, InvisibilityCount;
-    [SerializeField]
-    private GameObject Stun, Invisibility;
+    Dictionary<PowerUpTypes, int> powerUpDict = new Dictionary<PowerUpTypes, int>();
 
-    public enum powerUps { Stun, Invisibility };
-    powerUps currentPowerUp = powerUps.Stun;
+    PowerUpTypes currentPowerUp = PowerUpTypes.Invisibility;
 
     GameManager manager;
 
+    void Awake()
+    {
+        powerUpDict.Add(PowerUpTypes.Invisibility, 0);
+        powerUpDict.Add(PowerUpTypes.Stun, 0);
+    }
 
 	// Use this for initialization
 	void Start () 
     {
         manager = GameManager.Instance;
-        StunCount = 0;
 	}
 	
 	// Update is called once per frame
@@ -26,37 +28,20 @@ public class PlayerManager : MonoBehaviour {
 	    //logic for choosing which powerup to use and when to use it here
         if (Input.GetKeyDown("e"))
         {
-            //use the selected powerup
-            if (currentPowerUp == powerUps.Stun)
+            if (powerUpDict[currentPowerUp] > 0)
             {
-                //stun the enemies
-                if (StunCount > 0)
-                {
-                    Debug.Log("Stunning all enemies");
-                    manager.StunAllEnemies();
-                    StunCount--;
-                }
+                powerUpDict[currentPowerUp]--;
             }
-            else
-            {
-                if (InvisibilityCount > 0)
-                {
-                    Debug.Log("Turning Invisible!");
-                    manager.HidePlayer();
-                    InvisibilityCount--;
-                }
-            }
-
         }
 
         if (Input.GetKeyDown("q"))
         {
             Debug.Log("Changing the powerup type");
             //change the powerup to be the other one
-            if (currentPowerUp == powerUps.Stun)
-                currentPowerUp = powerUps.Invisibility;
+            if (currentPowerUp == PowerUpTypes.Stun)
+                currentPowerUp = PowerUpTypes.Invisibility;
             else
-                currentPowerUp = powerUps.Stun;
+                currentPowerUp = PowerUpTypes.Stun;
         }
 	}
 
@@ -64,25 +49,12 @@ public class PlayerManager : MonoBehaviour {
     {
         if (other.tag == "PowerUp")
         {
-            Debug.Log("Entered a power up");
-            //if (other.gameObject == Invisibility) { }   //update Invisibility count (or activate immediately)
-            if (other.gameObject == Stun) 
-            { 
-                //update stun count
-                Debug.Log("You have picked up a stun power up"); 
-                StunCount++;
-                //destroy the powerup so that it cannot be picked up again
-                GameObject.Destroy(other.gameObject);
-            }           
-            if (other.gameObject == Invisibility)
+            PowerUP pu = other.GetComponent<PowerUP>();
+            if (pu != null)
             {
-                //update invisibility count
-                Debug.Log("You have picked up an invisibility pwer up");
-                InvisibilityCount++;
-                //destroy the powerup so that it cannot be picked up again
-                GameObject.Destroy(other.gameObject);
+                powerUpDict[pu.Type]++;
             }
-            
+            GameObject.Destroy(other.gameObject);
         }
     }
 }
